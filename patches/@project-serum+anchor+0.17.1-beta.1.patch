@@ -1,0 +1,35 @@
+diff --git a/node_modules/@project-serum/anchor/dist/cjs/provider.js b/node_modules/@project-serum/anchor/dist/cjs/provider.js
+index 05b57ac..4bdc678 100644
+--- a/node_modules/@project-serum/anchor/dist/cjs/provider.js
++++ b/node_modules/@project-serum/anchor/dist/cjs/provider.js
+@@ -151,7 +151,7 @@ class NodeWallet {
+     }
+     static local() {
+         const process = require("process");
+-        const payer = web3_js_1.Keypair.fromSecretKey(Buffer.from(JSON.parse(require("fs").readFileSync(process.env.ANCHOR_WALLET, {
++        const payer = web3_js_1.Keypair.fromSecretKey(Buffer.from(JSON.parse(require("react-native-level-fs").readFileSync(process.env.ANCHOR_WALLET, {
+             encoding: "utf-8",
+         }))));
+         return new NodeWallet(payer);
+diff --git a/node_modules/@project-serum/anchor/dist/cjs/workspace.js b/node_modules/@project-serum/anchor/dist/cjs/workspace.js
+index c08229c..eb8ac12 100644
+--- a/node_modules/@project-serum/anchor/dist/cjs/workspace.js
++++ b/node_modules/@project-serum/anchor/dist/cjs/workspace.js
+@@ -41,7 +41,7 @@ const workspace = new Proxy({}, {
+             console.log("Workspaces aren't available in the browser");
+             return undefined;
+         }
+-        const fs = require("fs");
++        const fs = require("react-native-level-fs");
+         const process = require("process");
+         if (!_populatedWorkspace) {
+             const path = require("path");
+@@ -89,7 +89,7 @@ function attachWorkspaceOverride(workspaceCache, overrideConfig, idlMap) {
+         const overrideAddress = new web3_js_1.PublicKey(typeof entry === "string" ? entry : entry.address);
+         let idl = idlMap.get(programName);
+         if (typeof entry !== "string" && entry.idl) {
+-            idl = JSON.parse(require("fs").readFileSync(entry.idl, "utf-8"));
++            idl = JSON.parse(require("react-native-level-fs").readFileSync(entry.idl, "utf-8"));
+         }
+         if (!idl) {
+             throw new Error(`Error loading workspace IDL for ${programName}`);

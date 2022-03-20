@@ -1,0 +1,10 @@
+{
+  "account": null,
+  "tokenInfo": {
+    "address": "11111111111111111111111111111111",
+    "decimals": 9,
+    "logoURI": "https://solana.com/branding/new/exchange/exchange-black.png",
+    "name": "Solana",
+    "symbol": "SOL"
+  }
+}
