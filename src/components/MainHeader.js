@@ -35,7 +35,7 @@ export function MainHeader(props) {
               appearance="ghost"
               status="basic"
               size="giant"
-              onPress={() => props.navigation.navigate('Add New Wallet')}>
+              onPress={() => props.navigation.navigate('Manage Wallets')}>
               Add Wallet
             </Button>
           )}

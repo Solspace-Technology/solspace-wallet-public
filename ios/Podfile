@@ -44,6 +44,11 @@ target 'SolspaceWallet' do
 #   end
 # end
 
+def add_flipper_pods!(versions = {})
+
+pod 'react-native-flipper', :path => '../node_modules/react-native-flipper', :configuration => 'Debug'
+end
+
   post_install do |installer|
     installer.pods_project.build_configurations.each do |config|
       config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
