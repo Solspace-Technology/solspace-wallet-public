@@ -9099,6 +9099,11 @@ react-native-level-fs@^3.0.1:
     level-filesystem "^1.0.1"
     levelup "^0.18.2"
 
+react-native-mmkv@^2.3.3:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/react-native-mmkv/-/react-native-mmkv-2.3.3.tgz#ca0916e3dfb3e420fa27de526e53d9e391e3c9a1"
+  integrity sha512-bfBsIivEnr+OAxS2tWRqzyaDLlw9ZBGrbiuifO7wRtq1J5rNwkiKfSwTYBNLe23dzpl8pvSIUYgDrvmRnXTAhA==
+
 react-native-qrcode-svg@^6.1.2:
   version "6.1.2"
   resolved "https://registry.npmjs.org/react-native-qrcode-svg/-/react-native-qrcode-svg-6.1.2.tgz"

@@ -22,13 +22,14 @@ import {getStoredData} from './modules/utils';
 import {RootView} from './views/RootView';
 
 function App() {
-  const {state: walletState, dispatch: walletDispatch} = useWallet();
+  const {dispatch: walletDispatch} = useWallet();
   const {dispatch: appStateDispatch} = useAppState();
+  const [isLoaded, setIsLoaded] = React.useState(false);
 
   let isDarkMode = useGetCurrentColorScheme() === 'dark';
 
   async function getAndDispatchStoredItem(key, dispatch) {
-    let value = await getStoredData(key);
+    let value = getStoredData(key);
     if (value) {
       console.log('Retrieved localStorage data:', key);
       dispatch({type: 'RESTORE_STATE', payload: JSON.parse(value)});
@@ -36,31 +37,34 @@ function App() {
   }
 
   async function getAndMergeSettingsState() {
-    let storedValueString = await getStoredData('@appState');
-    let storedValue = JSON.parse(storedValueString);
+    let storedValueString = getStoredData('@appState');
 
-    let newSettings = [];
-    for (let setting of appDefaultState.settings) {
-      let existing = storedValue?.settings?.find(
-        item => item.name === setting.name,
-      );
-      if (existing) {
-        newSettings.push(existing);
-      } else {
-        newSettings.push(setting);
+    if (storedValueString) {
+      let storedValue = JSON.parse(storedValueString);
+      let newSettings = [];
+      for (let setting of appDefaultState.settings) {
+        let existing = storedValue?.settings?.find(
+          item => item.name === setting.name,
+        );
+        if (existing) {
+          newSettings.push(existing);
+        } else {
+          newSettings.push(setting);
+        }
       }
+      console.log('Merged and restored localStorage data: @appState');
+      appStateDispatch({
+        type: 'RESTORE_STATE',
+        payload: {...storedValue, settings: newSettings},
+      });
     }
-    console.log('Merged and restored localStorage data: @appState');
-    appStateDispatch({
-      type: 'RESTORE_STATE',
-      payload: {...storedValue, settings: newSettings},
-    });
   }
 
   React.useEffect(() => {
     // Update settings with any new items...
     getAndMergeSettingsState();
     getAndDispatchStoredItem('@walletState', walletDispatch);
+    setIsLoaded(true);
   }, []);
 
   return (
@@ -70,7 +74,7 @@ function App() {
         customMapping={mapping}
         {...eva}
         theme={isDarkMode ? {...eva.dark, ...theme} : {...eva.light, ...theme}}>
-        <RootView />
+        <RootView isLoaded={isLoaded} />
         <Toast config={toastConfig} />
       </ApplicationProvider>
     </>

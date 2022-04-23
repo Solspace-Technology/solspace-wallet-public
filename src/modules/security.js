@@ -6,7 +6,7 @@ import {getKeypairFromSecretKey} from './walletGeneration';
 
 import CryptoJS from 'crypto-js';
 
-const ENCRYPTION_KEY = 'soladexLlave';
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'soladexLlave';
 
 export async function getEncryptionKey() {
   const existingCredentials = await Keychain.getGenericPassword();

@@ -13,7 +13,7 @@ import {decryptData, resetEncryptionKey} from '../../modules/security';
 import {requestAirdrop} from '../../services/transactions';
 import {View} from 'react-native';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {logAllStoredData} from '../../modules/utils';
 
 export function SettingsScreen() {
   const {state: appState, dispatch: appStateDispatch} = useAppState();
@@ -105,23 +105,7 @@ export function SettingsScreen() {
   }
 
   async function consoleLogStoredState() {
-    let storageKeys = await AsyncStorage.getAllKeys();
-    let allData = await AsyncStorage.multiGet(storageKeys);
-    for (let item of allData) {
-      let data = await JSON.parse(item[1]);
-      if (item[0] === '@walletState') {
-        for (let wallet of data.wallets) {
-          if (wallet.type === 'keypair') {
-            // decrypt any encrypted secret keys here.
-            let decryptedSecretKey = await decryptData(wallet.secretKey);
-            wallet.secretKey = decryptedSecretKey;
-          }
-        }
-      } else if (item[0] === '@appState') {
-        delete data.encryptedSeedPhrase;
-      }
-      console.log({key: item[0], value: data});
-    }
+    await logAllStoredData();
   }
 
   function RenderListItem({item, index}) {

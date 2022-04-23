@@ -1,4 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {MMKV} from 'react-native-mmkv';
+import { decryptData } from './security';
 
 /* eslint-disable no-bitwise */
 export const USDFormatter = new Intl.NumberFormat('en-US', {
@@ -38,9 +39,11 @@ export function isFunctionComponent(component) {
   );
 }
 
-export async function setStoredData({key, value}) {
+export function setStoredData({key, value}: {key: string, value: string}) {
+  // Assumes that the value parametes is already stringified
   try {
-    await AsyncStorage.setItem(key, value);
+    const storage = new MMKV();
+    storage.set(key, value)
   } catch (e) {
     // Error saving data
     console.log(e);
@@ -48,9 +51,10 @@ export async function setStoredData({key, value}) {
   }
 }
 
-export async function getStoredData(key) {
+export function getStoredData(key: string) {
   try {
-    const value = await AsyncStorage.getItem(key);
+    const storage = new MMKV();
+    const value = storage.getString(key);
     return value;
     // must handle error in use when this is null
   } catch (e) {
@@ -60,5 +64,29 @@ export async function getStoredData(key) {
   }
 }
 
-export const interleave = ([x, ...xs], ys = []) =>
-  x === undefined ? ys : [x, ...interleave(ys, xs)];
+export async function logAllStoredData() {
+  // All storage is assumed to be a string
+  try {
+    const storage = new MMKV();
+    const storageKeys = storage.getAllKeys();
+
+    for (let key of storageKeys) {
+      let data = JSON.parse(storage.getString(key));
+      if (key === "@walletState") {
+        for (let wallet of data.wallets) {
+          if (wallet.secretKey) {
+            console.log("trying")
+            let decrypted = await decryptData(wallet.secretKey);
+            console.log('decrypted', decrypted);
+            wallet.secretKey = decrypted;
+          }
+        }
+      } else if (key === "@appState") {
+        delete data.encryptedSeedPhrase;
+      }
+      console.log({key, data})
+    }
+  } catch (e) {
+    console.log("Error getting data: ", e)
+  }
+}

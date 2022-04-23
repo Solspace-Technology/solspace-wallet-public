@@ -107,21 +107,34 @@ const MainView = () => (
   </RootStack.Navigator>
 );
 
-export const RootView = () => (
-  <NavigationContainer
-    onReady={() => RNBootSplash.hide({fade: true})}
-    independent={true}>
-    <DrawerStack.Navigator
-      screenOptions={{
-        headerShown: false,
-        drawerStyle: {
-          width: 300,
-        },
-        drawerType: 'slide',
-        swipeEdgeWidth: 15,
-      }}
-      drawerContent={props => <DrawerContainer {...props} />}>
-      <DrawerStack.Screen name="Root" component={MainView} />
-    </DrawerStack.Navigator>
-  </NavigationContainer>
-);
+export function RootView({isLoaded}) {
+  const [isReady, setIsReady] = React.useState(false);
+
+  function callRootReady() {
+    setIsReady(true);
+  }
+
+  React.useEffect(() => {
+    if (isReady && isLoaded) {
+      // Prevents screen flashing while data is loading
+      RNBootSplash.hide({fade: true});
+    }
+  }, [isReady, isLoaded]);
+
+  return (
+    <NavigationContainer onReady={callRootReady} independent={true}>
+      <DrawerStack.Navigator
+        screenOptions={{
+          headerShown: false,
+          drawerStyle: {
+            width: 300,
+          },
+          drawerType: 'slide',
+          swipeEdgeWidth: 15,
+        }}
+        drawerContent={props => <DrawerContainer {...props} />}>
+        <DrawerStack.Screen name="Root" component={MainView} />
+      </DrawerStack.Navigator>
+    </NavigationContainer>
+  );
+}
