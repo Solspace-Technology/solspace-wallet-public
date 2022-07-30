@@ -34,6 +34,7 @@
     "@ui-kitten/eva-icons": "^5.1.2",
     "asyncstorage-down": "^4.2.0",
     "axios": "^0.27.2",
+    "babel-plugin-module-resolver": "^4.1.0",
     "bip39": "^3.0.4",
     "bs58": "^4.0.1",
     "buffer": "^6.0.3",
@@ -59,6 +60,8 @@
     "react-native-level-fs": "^3.0.1",
     "react-native-mmkv": "^2.4.3",
     "react-native-qrcode-svg": "^6.1.2",
+    "react-native-quick-base64": "^2.0.5",
+    "react-native-quick-crypto": "^0.4.4",
     "react-native-reanimated": "^2.9.1",
     "react-native-safe-area-context": "^4.3.1",
     "react-native-screens": "^3.15.0",
@@ -104,13 +107,13 @@
     "preset": "react-native"
   },
   "react-native": {
-    "crypto": "react-native-crypto",
+    "crypto": "react-native-quick-crypto",
     "https": "https-browserify",
     "path": "path-browserify",
     "fs": "react-native-level-fs"
   },
   "browser": {
-    "crypto": "react-native-crypto",
+    "crypto": "react-native-quick-crypto",
     "https": "https-browserify",
     "path": "path-browserify",
     "fs": "react-native-level-fs"

@@ -15,6 +15,7 @@ module.exports = {
       stream: require.resolve('readable-stream'),
       fetch: require.resolve('cross-fetch'),
       ...require('node-libs-react-native'),
+      crypto: require.resolve('react-native-quick-crypto'),
       path: require.resolve(__dirname, '../../node_modules/path-browserify'),
       fs: require.resolve(
         __dirname,
