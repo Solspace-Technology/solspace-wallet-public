@@ -215,10 +215,10 @@ async function process_solana_transactions_ledger({
 
     // console.log(from_pubkey);
 
-    const tx = new Transaction({
-      recentBlockhash,
-      feePayer: from_pubkey,
-    }).add(...transactions);
+    const tx = new Transaction()
+    tx.feePayer = from_pubkey;
+    tx.recentBlockhash = recentBlockhash;
+    tx.add(...transactions);
 
     const sig_bytes = await solana_ledger_sign_transaction(
       transport,
