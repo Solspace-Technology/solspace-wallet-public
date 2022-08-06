@@ -1,40 +1,54 @@
-/* eslint-disable react-native/no-inline-styles */
 import {Layout, Button, Icon, Text, Tooltip, Card} from '@ui-kitten/components';
-import {StatusBar, TouchableOpacity, View, Image} from 'react-native';
+import {
+  StatusBar,
+  TouchableOpacity,
+  View,
+  Image,
+  SafeAreaView,
+} from 'react-native';
+
 import {useGetCurrentColorScheme} from '../hooks/useGetCurrentColorScheme';
-import {ThemeVariables} from '../../src/styles/themeVariables';
+import {ThemeVariables} from '../styles/themeVariables';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {isFunctionComponent, shortenPubKey} from '../modules/utils';
-import {SafeAreaView} from 'react-native';
+import styled from 'styled-components/native';
+import React, {PropsWithChildren} from 'react';
 const {colors} = ThemeVariables();
 
-export const ColorCard = styled(Card)`
-  background-color: ${props => colors[props.color] || 'blue'};
+export const ColorCard = styled(Card)<{color?: string}>`
+  background-color: ${(props) =>
+    colors[props.color as keyof typeof colors] || 'blue'};
   align-self: center;
   width: 95%;
   border-radius: 10px;
   margin-bottom: 10px;
 `;
 
-export const CardRow = styled(View)`
+export const CardRow = styled.View`
   flex-direction: row;
   align-items: flex-start;
   justify-content: space-between;
 `;
 
-export const DarkText = styled(Text)`
+export const DarkText = styled.Text`
   color: ${colors.dark};
   margin-bottom: 5px;
 `;
 
-export const LightText = styled(Text)`
+export const LightText = styled.Text`
   color: ${colors.light};
   margin-bottom: 10px;
 `;
 
 //* Components:
-
-export function ListItem(props) {
+interface ListItemProps extends PropsWithChildren<typeof TouchableOpacity> {
+  left?: any;
+  right?: any;
+  center?: any;
+  onPress?: () => void;
+  outline?: any;
+}
+export function ListItem(props: ListItemProps) {
   const isDarkMode = useGetCurrentColorScheme() === 'dark';
   const {left, right, center, children} = props;
 
@@ -88,25 +102,36 @@ export function ListItem(props) {
   );
 }
 
-const StyledListItem = styled(View)`
+const StyledListItem = styled(View)<{outline?: string; isDarkMode?: boolean}>`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   border-radius: 15px;
-  border: ${props =>
+  border: ${(props) =>
     props.outline
-      ? `solid 1px ${colors[props.outline] || colors['primary']};`
+      ? `solid 1px ${
+          colors[props.outline as keyof typeof colors] || colors.primary
+        };`
       : 'none'};
-  background-color: ${props => (props.isDarkMode ? '#ffffff15' : '#00000015')};
+  background-color: ${(props) =>
+    props.isDarkMode ? '#ffffff15' : '#00000015'};
   margin: 5px 5px;
   padding: 15px 15px;
 `;
 
-export function WalletChip({pubKey, long, small, keyLength}) {
+interface WalletChipProps {
+  pubKey: string;
+  long?: boolean;
+  small?: boolean;
+  white?: boolean;
+  keyLength?: number | string;
+}
+
+export function WalletChip({pubKey, long, small, keyLength}: WalletChipProps) {
   const [isTooltipVisible, setIsTooltipVisible] = React.useState(false);
   const isDarkMode = useGetCurrentColorScheme() === 'dark';
 
-  function copyToClipboard(string) {
+  function copyToClipboard(string: string) {
     if (string) {
       Clipboard.setString(string);
       setIsTooltipVisible(true);
@@ -125,7 +150,7 @@ export function WalletChip({pubKey, long, small, keyLength}) {
           : pubKey
           ? long
             ? pubKey
-            : shortenPubKey(pubKey, keyLength)
+            : shortenPubKey(pubKey, keyLength as number)
           : 'No Wallet'}
 
         {long && pubKey && (
@@ -167,26 +192,34 @@ export function WalletChip({pubKey, long, small, keyLength}) {
 
 const WalletChipColor = colors.dark;
 
-const WalletChipText = styled(Text)`
+const WalletChipText = styled(Text)<{
+  white?: boolean;
+  long?: boolean;
+  small?: boolean;
+}>`
   /* font-size: 18px; */
-  color: ${props => (props.white ? '#fff' : WalletChipColor)};
-  font-size: ${props => (props.long ? '24px' : '18px')};
-  ${props => props.small && 'font-size: 12px'};
+  color: ${(props) => (props.white ? '#fff' : WalletChipColor)};
+  font-size: ${(props) => (props.long ? '24px' : '18px')};
+  ${(props) => props.small && 'font-size: 12px'};
 `;
 
-const WalletChipButton = styled(TouchableOpacity)`
+const WalletChipButton = styled(TouchableOpacity)<{
+  white?: boolean;
+  long?: boolean;
+  small?: boolean;
+}>`
   flex-direction: row;
   align-items: center;
-  border: 1px solid ${props => (props.white ? '#fff' : WalletChipColor)};
+  border: 1px solid ${(props) => (props.white ? '#fff' : WalletChipColor)};
   padding: 5px;
-  ${props => props.small && 'padding: 3px;'};
-  margin-top: ${props => (props.long ? '20px' : '3px')};
+  ${(props) => props.small && 'padding: 3px;'};
+  margin-top: ${(props) => (props.long ? '20px' : '3px')};
   border-radius: 5px;
-  max-width: ${props => (props.long ? '85%' : '100%')};
+  max-width: ${(props) => (props.long ? '85%' : '100%')};
 `;
 
-//TODO: Add an alert icon here. For some reason it doesnt work simply
-export const ErrorMessage = props => (
+//TODO: Add an alert icon here. For some reason it doesn't work simply
+export const ErrorMessage = (props: {error?: any}) => (
   <ErrorContainer>
     <Text status="danger" category="h3">
       {props?.error?.name || 'Unexpected Error'}
@@ -202,7 +235,7 @@ export const ErrorMessage = props => (
 
 const ErrorContainer = styled(Layout)``;
 
-export function StackHeaderWithLogo(props) {
+export function StackHeaderWithLogo(props: any) {
   const tokenLogoURI = props?.route?.params?.tokenLogoURI;
   const isLogoSVG = props?.route?.params?.isLogoSVG;
   const tokenSymbol = props?.route?.params?.tokenSymbol;
@@ -262,7 +295,16 @@ const TokensHeader = styled(Layout)`
   align-items: center;
 `;
 
-export const StackHeader = props => (
+interface StackHeaderProps extends React.PropsWithChildren {
+  navigation: any;
+  noMargin?: boolean;
+  accessoryLeft?: React.ReactElement;
+  accessoryRight?: React.ReactElement;
+  leftIconName?: string;
+  title?: string;
+  onPress?: () => void;
+}
+export const StackHeader = (props: StackHeaderProps) => (
   <SafeAreaView>
     <WalletsHeaderContainer noMargin={props.noMargin}>
       <WalletHeaderButton
@@ -290,18 +332,20 @@ const WalletHeaderButton = styled(Button)`
   left: 0;
 `;
 
-const WalletsHeaderContainer = styled(Layout)`
+const WalletsHeaderContainer = styled(Layout)<{noMargin?: boolean}>`
   border-bottom: none;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  /* margin-top: ${props => (props.noMargin ? '0px' : '20px')}; */
+  /* margin-top: ${(props) => (props.noMargin ? '0px' : '20px')}; */
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   padding: 20px 10px;
 `;
 
-export const CancelButton = props => (
+export const CancelButton = (
+  props: React.PropsWithChildren | React.ComponentProps<any>,
+) => (
   <Button
     status="danger"
     size="small"
@@ -312,7 +356,7 @@ export const CancelButton = props => (
   </Button>
 );
 
-export const ScreenBase = props => (
+export const ScreenBase = (props: React.PropsWithChildren) => (
   <>
     <StatusBar />
     <Layout style={{flex: 1}}>
@@ -323,7 +367,7 @@ export const ScreenBase = props => (
   </>
 );
 
-export const ScreenContainer = styled(Layout)`
-  border: ${props => (props.debug ? 'solid 2px red' : 'none')};
+export const ScreenContainer = styled(Layout)<{debug?: boolean}>`
+  border: ${(props) => (props.debug ? 'solid 2px red' : 'none')};
   flex: 1;
 `;

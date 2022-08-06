@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
 import {ActivityIndicator, Alert} from 'react-native';
 
 import {BaseToast} from 'react-native-toast-message';
@@ -8,7 +7,7 @@ import {ThemeVariables} from '../styles/themeVariables';
 const {colors} = ThemeVariables();
 
 export const toastConfig = {
-  transactionProcessing: ({props}) => (
+  transactionProcessing: ({props}: {props: any}) => (
     <BaseToast
       style={{
         borderLeftColor: colors.info,
@@ -22,7 +21,7 @@ export const toastConfig = {
       )}
     />
   ),
-  transactionSuccess: ({props}) => {
+  transactionSuccess: ({props}: {props: any}) => {
     return (
       <BaseToast
         style={{
@@ -41,7 +40,7 @@ export const toastConfig = {
       />
     );
   },
-  transactionError: ({props}) => (
+  transactionError: ({props}: {props: any}) => (
     <BaseToast
       style={{
         borderLeftColor: colors.danger,

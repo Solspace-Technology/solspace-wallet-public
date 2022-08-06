@@ -5,12 +5,12 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 
 // Screens
 import {ManageWalletsScreen} from './ManageWallets/index.js';
-import {WalletStack} from './Wallet'; 
+import {WalletStack} from './Wallet';
 import {Settings} from './Settings';
 import {CameraScreen} from './CameraScreen.js';
 
 // Components
-import {MainHeader} from '../components/MainHeader.js';
+import {MainHeader} from '../components/MainHeader.jsx';
 import {StackHeader} from '../components/Common';
 import {BottomTabBar} from '../components/BottomNavigation';
 
@@ -19,7 +19,7 @@ import RNBootSplash from 'react-native-bootsplash';
 import {NavigationContainer} from '@react-navigation/native';
 
 // Drawer Imports
-import {DrawerContainer} from '../components/DrawerContainer.js';
+import {DrawerContainer} from '../components/DrawerContainer.jsx';
 import {ViewTransactionScreen} from './ViewTransaction.js';
 import {BrowserView} from './Browser/index.tsx';
 
@@ -30,7 +30,7 @@ const DrawerStack = createDrawerNavigator();
 const DrawerViews = () => (
   <BottomTabs.Navigator
     screenOptions={{headerShown: false}}
-    tabBar={props => <BottomTabBar {...props} />}>
+    tabBar={(props) => <BottomTabBar {...props} />}>
     <BottomTabs.Screen
       name="Wallet"
       component={WalletStack}
@@ -56,7 +56,7 @@ const MainView = () => (
       component={ManageWalletsScreen}
       options={{
         headerShown: true,
-        header: props => (
+        header: (props) => (
           <StackHeader
             title="Manage Wallets"
             leftIconName="arrowhead-down-outline"
@@ -71,7 +71,7 @@ const MainView = () => (
       component={ViewTransactionScreen}
       options={{
         headerShown: true,
-        header: props => (
+        header: (props) => (
           <StackHeader
             title="View Transaction"
             leftIconName="arrowhead-down-outline"
@@ -86,7 +86,7 @@ const MainView = () => (
       component={CameraScreen}
       options={{
         headerShown: true,
-        header: props => (
+        header: (props) => (
           <StackHeader
             title="Scan Code"
             leftIconName="arrowhead-down-outline"
@@ -124,7 +124,7 @@ export function RootView({isLoaded}) {
           drawerType: 'slide',
           swipeEdgeWidth: 15,
         }}
-        drawerContent={props => <DrawerContainer {...props} />}>
+        drawerContent={(props) => <DrawerContainer {...props} />}>
         <DrawerStack.Screen name="Root" component={MainView} />
       </DrawerStack.Navigator>
     </NavigationContainer>

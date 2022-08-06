@@ -1,6 +1,7 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-nocheck
+import React from 'react';
 import {setStoredData} from '../modules/utils';
-
-//TODO: individual setting values should be stored in localStorage so that they can be merged with new ones...
 
 export const defaultState = {
   activeWallet: undefined,
@@ -64,29 +65,33 @@ export const defaultState = {
   ],
 };
 
-const AppStateContext = React.createContext();
+const AppStateContext = React.createContext<any>();
 
-async function storeState(state) {
-  let value = JSON.stringify(state);
+async function storeState(state: any) {
+  const value = JSON.stringify(state);
   setStoredData({key: '@appState', value});
 }
 
-function appStateReducer(state, action) {
+function appStateReducer(state: any, action: any) {
   switch (action.type) {
     case 'CLEAR_SEED_PHRASE': {
-      let newState = {...state, encryptedSeedPhrase: undefined};
+      const newState = {...state, encryptedSeedPhrase: undefined};
       storeState(newState);
       return newState;
     }
     case 'UPDATE_SEED_PHRASE': {
-      let newState = {...state, encryptedSeedPhrase: action.payload};
+      const newState = {...state, encryptedSeedPhrase: action.payload};
       storeState(newState);
       return newState;
     }
     case 'UPDATE_NETWORK': {
-      let newState = {
+      const newState = {
         ...state,
-        settings: [...state.settings.filter(({name}) => name !== 'network')],
+        settings: [
+          ...state.settings.filter(
+            ({name}: {name: string}) => name !== 'network',
+          ),
+        ],
       };
       newState.settings.unshift({
         name: 'network',
@@ -100,7 +105,7 @@ function appStateReducer(state, action) {
     }
     case 'UPDATE_SETTINGS': {
       //Todo: if updating network setting clear the token_holdings
-      let newState = {...state, settings: action.payload};
+      const newState = {...state, settings: action.payload};
       storeState(newState);
       return newState;
     }
@@ -117,7 +122,7 @@ function appStateReducer(state, action) {
   }
 }
 
-function AppStateProvider({children}) {
+function AppStateProvider({children}: React.PropsWithChildren) {
   const [state, dispatch] = React.useReducer(appStateReducer, defaultState);
 
   const value = {state, dispatch};

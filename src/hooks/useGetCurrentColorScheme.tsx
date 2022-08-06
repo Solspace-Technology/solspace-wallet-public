@@ -1,11 +1,13 @@
 import {useAppState} from '../providers/appState-context';
 
 export function useGetCurrentColorScheme() {
-  let {
+  const {
     state: {settings},
   } = useAppState();
 
-  let isDarkMode = settings.find(({name}) => name === 'darkMode').value;
+  const isDarkMode = settings.find(
+    ({name}: {name: string}) => name === 'darkMode',
+  ).value;
 
   if (isDarkMode) {
     return 'dark';

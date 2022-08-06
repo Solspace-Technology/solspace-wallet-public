@@ -1,12 +1,13 @@
 import {getStakingAccounts} from '../services/staking';
 import {useWallet} from '../providers/wallet-context';
 import {useAppState} from '../providers/appState-context';
-import {ListItem} from './Common';
-import {Text, Layout, Spinner, Icon} from '@ui-kitten/components';
+import {Text, Spinner, Icon} from '@ui-kitten/components';
 import {ThemeVariables} from '../styles/themeVariables';
-import {LayoutAnimation, TouchableOpacity} from 'react-native';
+import {TouchableOpacity} from 'react-native';
 
 import {useNavigation} from '@react-navigation/native';
+import React from 'react';
+import styled from 'styled-components/native';
 
 const {colors} = ThemeVariables();
 
@@ -21,13 +22,15 @@ export function StakeAccountsButton() {
     state: {settings},
   } = useAppState();
   const navigation = useNavigation();
-  let network = settings.find(item => item.name === 'network')?.value;
+  const network = settings.find(
+    (item: {name: string}) => item.name === 'network',
+  )?.value;
 
   const [isStakingLoading, setIsStakingLoading] = React.useState(true);
-  const [stakeAccounts, setStakeAccounts] = React.useState();
+  const [stakeAccounts, setStakeAccounts] = React.useState<any>();
 
   React.useEffect(() => {
-    setStakeAccounts();
+    setStakeAccounts(undefined);
   }, [pubKeyString]);
 
   React.useEffect(() => {
@@ -54,9 +57,12 @@ export function StakeAccountsButton() {
     <StakeAccountsItem
       disabled={!stakeAccounts}
       onPress={() =>
-        navigation.navigate('Staking Accounts', {
-          stakeAccounts: JSON.stringify(stakeAccounts),
-        })
+        navigation.navigate(
+          'Staking Accounts' as never,
+          {
+            stakeAccounts: JSON.stringify(stakeAccounts) as never,
+          } as never,
+        )
       }>
       {isStakingLoading ? (
         <Spinner size="medium" status="info" />

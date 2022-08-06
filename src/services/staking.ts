@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-nocheck
 import axios from 'axios';
 import {
   clusterApiUrl,
@@ -21,7 +23,7 @@ export async function getStakingAccounts(
   const connection = new Connection(clusterApiUrl(network));
 
   try {
-    let stakeAccounts = await connection.getParsedProgramAccounts(
+    const stakeAccounts = await connection.getParsedProgramAccounts(
       new PublicKey(StakeProgram.programId),
       {
         commitment: 'recent',
@@ -53,7 +55,7 @@ export async function getValidatorDetails(
     } else {
       reqNetwork = network;
     }
-    let response = await axios.get(
+    const response = await axios.get(
       `https://www.validators.app/api/v1/validators/${reqNetwork}/${account}.json`,
       {
         headers: {
@@ -66,12 +68,12 @@ export async function getValidatorDetails(
 
   const connection = new Connection(clusterApiUrl(network));
   try {
-    let currentVoteAccounts = await connection.getVoteAccounts();
+    const currentVoteAccounts = await connection.getVoteAccounts();
 
-    let validators = [];
-    let detailRequests = [];
+    const validators = [];
+    const detailRequests = [];
 
-    for (let stakeAccount of stakeAccounts) {
+    for (const stakeAccount of stakeAccounts) {
       const {
         account: {
           data: {
@@ -85,16 +87,16 @@ export async function getValidatorDetails(
           },
         },
       } = stakeAccount;
-      let voterDetails = currentVoteAccounts.current.find(
+      const voterDetails = currentVoteAccounts.current.find(
         ({votePubkey}) => votePubkey === voter,
       );
       detailRequests.push(getDetails(voterDetails.nodePubkey));
       validators.push({voterDetails, ...stakeAccount});
     }
 
-    let allDetailRequests = await Promise.all(detailRequests);
+    const allDetailRequests = await Promise.all(detailRequests);
 
-    for (let [index, item] of validators.entries()) {
+    for (const [index, item] of validators.entries()) {
       validators[index] = {...item, details: allDetailRequests[index].data};
     }
     return {validators, error: null};

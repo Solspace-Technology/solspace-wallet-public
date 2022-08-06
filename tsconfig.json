@@ -1,15 +1,12 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": false,
     "skipLibCheck": true,
     "strict": false,
     "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -22,10 +19,9 @@
   },
   "include": [
     "**/*.ts",
-    "**/*.tsx"
-, "src/modules/security.js"  ],
-  "exclude": [
-    "./node_modules",
-    "**/**/*.svg"
-  ]
+    "**/*.tsx",
+    "src/modules/security.js",
+    "./types/**/*.ts"
+  ],
+  "exclude": ["./node_modules", "**/**/*.svg"]
 }

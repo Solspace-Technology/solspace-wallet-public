@@ -1,3 +1,4 @@
+import React from 'react';
 import {useNavigation} from '@react-navigation/native';
 
 import {Text, Spinner, Layout, Button} from '@ui-kitten/components';
@@ -10,6 +11,7 @@ import {
   ScrollView,
   TouchableOpacity,
   View,
+  useWindowDimensions,
 } from 'react-native';
 
 import {useGetCurrentColorScheme} from '../hooks/useGetCurrentColorScheme';
@@ -20,22 +22,22 @@ import {useTokensState} from '../providers/tokens-context';
 
 import {ThemeVariables} from '../styles/themeVariables';
 
-import {USDFormatter} from '../modules/utils';
-import {LightenColor} from '../modules/utils';
-import React from 'react';
+import {USDFormatter, LightenColor} from '../modules/utils';
+
 import {WalletHeading} from './WalletHeading';
-import {useWindowDimensions} from 'react-native';
+import styled from 'styled-components/native';
 
 export function TokenList() {
   const {width: PAGE_WIDTH} = useWindowDimensions();
   const isDarkMode = useGetCurrentColorScheme() === 'dark';
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isError, setIsError] = React.useState(false);
 
   const [horizontalOffset, setHorizontalOffset] = React.useState(0);
 
   const {state: appState} = useAppState();
-  const {state: walletState, dispatch: walletDispatch} = useWallet();
+  const {state: walletState} = useWallet();
   const {state: tokenState, dispatch: tokenDispatch} = useTokensState();
 
   const navigation = useNavigation();
@@ -44,14 +46,14 @@ export function TokenList() {
 
   // Pertinent App Settings:
   const network = appState?.settings?.find(
-    ({name}) => name === 'network',
+    ({name}: {name: string}) => name === 'network',
   ).value;
   const showZeroBalances = appState.settings.find(
-    ({name}) => name === 'showZeroBalances',
+    ({name}: {name: string}) => name === 'showZeroBalances',
   ).value;
 
   const showUnnamedTokens = appState.settings.find(
-    ({name}) => name === 'showUnnamedTokens',
+    ({name}: {name: string}) => name === 'showUnnamedTokens',
   ).value;
 
   React.useEffect(() => {
@@ -84,7 +86,7 @@ export function TokenList() {
     });
   }
 
-  function onHeadingPress(heading) {
+  function onHeadingPress(heading: string) {
     if (heading === 'tokens') {
       horizontalRef.current.scrollTo({x: 0, animated: true});
       setHorizontalOffset(0);
@@ -95,26 +97,28 @@ export function TokenList() {
     }
   }
 
-  function renderTokenItem({item, index}) {
-    let tokenMint = item?.account?.data?.parsed?.info?.mint;
-    let isSPLToken = item?.account?.data?.program === 'spl-token';
-    let tokenHoldings =
+  function renderTokenItem({item, index}: {item: any; index: number}) {
+    const tokenMint = item?.account?.data?.parsed?.info?.mint;
+    const isSPLToken = item?.account?.data?.program === 'spl-token';
+    const tokenHoldings =
       item?.account?.data?.parsed?.info?.tokenAmount?.uiAmountString;
-    let tokenSymbol = item?.tokenInfo?.symbol;
-    let tokenName = item?.tokenInfo?.name || 'SPL Token';
-    let tokenLogoURI = item?.tokenInfo?.logoURI;
-    let tokenDecimals =
+    const tokenSymbol = item?.tokenInfo?.symbol;
+    const tokenName = item?.tokenInfo?.name || 'SPL Token';
+    const tokenLogoURI = item?.tokenInfo?.logoURI;
+    const tokenDecimals =
       item?.account?.data?.parsed?.info?.tokenAmount?.decimals;
 
     // Detailed price info:
-    let tokenPriceInfo = tokenState?.SPLTokenPrices[index];
+    const tokenPriceInfo = tokenState?.SPLTokenPrices[index];
 
     // Shallow price info
     let tokenPriceUSD = item?.shallowPriceInfo?.usd;
-    let USDChange24h = item?.shallowPriceInfo?.usd_24h_change;
-    let portfolioChange = (USDChange24h / 100) * tokenPriceUSD * tokenHoldings;
+    const USDChange24h = item?.shallowPriceInfo?.usd_24h_change;
+    const portfolioChange =
+      (USDChange24h / 100) * tokenPriceUSD * tokenHoldings;
 
-    let isLogoSVG = item?.tokenInfo?.logoURI?.toLowerCase().slice(-3) === 'svg';
+    const isLogoSVG =
+      item?.tokenInfo?.logoURI?.toLowerCase().slice(-3) === 'svg';
 
     if (
       item?.tokenInfo?.symbol === 'USDC' ||
@@ -129,18 +133,21 @@ export function TokenList() {
           isDarkMode={isDarkMode}
           key={index}
           onPress={() => {
-            navigation.navigate('View Tokens', {
-              tokenPriceInfo,
-              tokenSymbol,
-              tokenName,
-              tokenMint,
-              isSPLToken,
-              tokenPriceUSD,
-              tokenHoldings,
-              tokenDecimals,
-              tokenLogoURI,
-              pubKey: walletState.activeWallet.pubKeyString,
-            });
+            navigation.navigate(
+              'View Tokens' as never,
+              {
+                tokenPriceInfo: tokenPriceInfo as never,
+                tokenSymbol: tokenSymbol as never,
+                tokenName: tokenName as never,
+                tokenMint: tokenMint as never,
+                isSPLToken: isSPLToken as never,
+                tokenPriceUSD: tokenPriceUSD as never,
+                tokenHoldings: tokenHoldings as never,
+                tokenDecimals: tokenDecimals as never,
+                tokenLogoURI: tokenLogoURI as never,
+                pubKey: walletState.activeWallet.pubKeyString as never,
+              } as never,
+            );
           }}>
           <TokenContainerLeft>
             {tokenLogoURI && !isLogoSVG ? (
@@ -175,19 +182,21 @@ export function TokenList() {
     }
   }
 
-  function renderNFTItem({item, index}) {
+  function renderNFTItem({item, index}: {item: any; index: number}) {
     return (
       <NFTItem
         isDarkMode={isDarkMode}
         key={index}
-        onPress={() => navigation.navigate('View NFT', item.metaData)}>
+        onPress={() =>
+          navigation.navigate('View NFT' as never, item.metaData as never)
+        }>
         <Text category="h6">{item?.metaData?.data?.name}</Text>
       </NFTItem>
     );
   }
 
   const emptyListComponent = () => (
-    <NFTItem isDarkMode={isDarkMode} onPress={() => null}>
+    <NFTItem isDarkMode={isDarkMode} onPress={undefined}>
       <Text category="h6">No items to display =[</Text>
     </NFTItem>
   );
@@ -221,7 +230,7 @@ export function TokenList() {
           snapToAlignment="start"
           pagingEnabled
           showsHorizontalScrollIndicator={false}
-          onScrollEndDrag={e =>
+          onScrollEndDrag={(e) =>
             setHorizontalOffset(e.nativeEvent.targetContentOffset.x)
           }>
           <View style={{width: '50%'}}>
@@ -354,8 +363,8 @@ export function TokenList() {
   );
 }
 const {colors} = ThemeVariables();
-const HeadingText = styled(Text)`
-  ${props => !props.active && 'opacity: 0.3;'};
+const HeadingText = styled(Text)<{active?: boolean}>`
+  ${(props) => !props.active && 'opacity: 0.3;'};
 `;
 
 const HeadingContainer = styled(Layout)`
@@ -364,12 +373,13 @@ const HeadingContainer = styled(Layout)`
   padding-bottom: 10px;
 `;
 
-const StyledTokenItem = styled(TouchableOpacity)`
+const StyledTokenItem = styled(TouchableOpacity)<{isDarkMode?: boolean}>`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   border-radius: 15px;
-  background-color: ${props => (props.isDarkMode ? '#ffffff15' : '#00000015')};
+  background-color: ${(props) =>
+    props.isDarkMode ? '#ffffff15' : '#00000015'};
   margin: 5px 15px;
   padding: 15px 15px;
 `;
@@ -403,4 +413,6 @@ const StyledTokenImage = styled(Image)`
   margin: 0px 10px;
 `;
 
-const TokenImage = ({uri}) => <StyledTokenImage source={{uri}} />;
+const TokenImage = ({uri}: {uri: string}) => (
+  <StyledTokenImage source={{uri}} />
+);

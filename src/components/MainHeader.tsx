@@ -1,13 +1,15 @@
-import {Layout, Button, Icon, Text, Divider} from '@ui-kitten/components';
-import {View, SafeAreaView, LayoutAnimation, Image} from 'react-native';
+/* eslint-disable react/no-unstable-nested-components */
+import {Layout, Button, Icon, Text} from '@ui-kitten/components';
+import {View, SafeAreaView, Image} from 'react-native';
+import styled from 'styled-components/native';
 
 import {useWallet} from '../providers/wallet-context';
 import {ThemeVariables} from '../styles/themeVariables';
 import {WalletChip} from './Common';
 
-export function MainHeader(props) {
+export function MainHeader(props: any) {
   const {state: walletState} = useWallet();
-  let wallet = walletState?.activeWallet;
+  const wallet = walletState?.activeWallet;
 
   const WalletInfo = () => (
     <Layout style={{flexDirection: 'column', alignItems: 'center'}}>
@@ -64,8 +66,4 @@ const StyledMainHeader = styled(View)`
   margin-bottom: 10px;
   border-bottom-width: 3px;
   border-bottom-color: ${colors.itemBackground};
-`;
-
-const LeftSpacer = styled(Layout)`
-  margin-right: 70px;
 `;

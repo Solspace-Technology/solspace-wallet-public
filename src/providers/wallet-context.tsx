@@ -1,8 +1,10 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-nocheck
 import {setStoredData} from '../modules/utils';
 
-const WalletContext = React.createContext();
+const WalletContext = React.createContext<any>();
 
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const walletItemState = {
   id: 'uuid',
   active: false,
@@ -24,25 +26,25 @@ const defaultState = {
 };
 
 async function storeState(state) {
-  let value = JSON.stringify(state);
+  const value = JSON.stringify(state);
   setStoredData({key: '@walletState', value});
 }
 
 function walletReducer(state, action) {
   switch (action.type) {
     case 'UPDATE_DERIVATION_PATH': {
-      let newState = {...state, derivationPath: action.payload};
+      const newState = {...state, derivationPath: action.payload};
       storeState(newState);
       return newState;
     }
     case 'UPDATE_LEDGER_DEVICE': {
-      let newState = {...state, ledgerDevice: action.payload};
+      const newState = {...state, ledgerDevice: action.payload};
       storeState(newState);
       return newState;
     }
     case 'ADD_WALLET': {
       //* Adds a new wallet to the list of wallets, always in the inactive state. Payload is the wallet object
-      let newState = {
+      const newState = {
         ...state,
         wallets: [...state.wallets, {...action.payload, active: false}],
       };
@@ -51,8 +53,8 @@ function walletReducer(state, action) {
     }
     case 'REMOVE_WALLET': {
       // Removes a wallet and sets the first one as active if there is no other active wallet
-      let newWallets = state.wallets.filter(({id}) => id !== action.payload);
-      let newState = {
+      const newWallets = state.wallets.filter(({id}) => id !== action.payload);
+      const newState = {
         ...state,
         wallets: newWallets,
       };
@@ -62,10 +64,10 @@ function walletReducer(state, action) {
     }
     case 'SET_ACTIVE_WALLET': {
       // Take in a walletId, then ensure that all wallets active=false then set this wallet active=true
-      let newWalletState = {...state};
+      const newWalletState = {...state};
       let activeWallet;
       let walletIndex = 0;
-      for (let wallet of state.wallets) {
+      for (const wallet of state.wallets) {
         if (wallet.id === action.payload) {
           // console.log('activeWallet', wallet);
           newWalletState.wallets[walletIndex] = {...wallet, active: true};
@@ -75,12 +77,12 @@ function walletReducer(state, action) {
         }
         walletIndex = walletIndex + 1;
       }
-      let newState = {...newWalletState, activeWallet};
+      const newState = {...newWalletState, activeWallet};
       storeState(newState);
       return newState;
     }
     case 'SET_STAKE_ACCOUNTS': {
-      let newState = {
+      const newState = {
         ...state,
         activeWallet: {...state.activeWallet, stakeAccounts: action.payload},
       };
@@ -92,7 +94,7 @@ function walletReducer(state, action) {
       return defaultState;
     }
     case 'RESTORE_STATE': {
-      let newWalletState = {...action.payload};
+      const newWalletState = {...action.payload};
       storeState(newWalletState);
       return {...action.payload};
     }

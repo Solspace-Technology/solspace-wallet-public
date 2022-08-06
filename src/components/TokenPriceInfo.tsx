@@ -1,10 +1,9 @@
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 import React from 'react';
 
-import {ThemeVariables} from '../styles/themeVariables';
 import {Layout, Text} from '@ui-kitten/components';
 
-export function TokenPriceInfo({tokenPriceInfo}) {
+export function TokenPriceInfo({tokenPriceInfo}: {tokenPriceInfo: any}) {
   const marketDataKeys = [
     'price_change_percentage_24h',
     'price_change_percentage_7d',
@@ -45,8 +44,8 @@ export function TokenPriceInfo({tokenPriceInfo}) {
   );
 }
 
-const PriceText = styled(Text)`
-  color: ${props => (props.positive ? 'green' : 'red')};
+const PriceText = styled(Text)<{positive: boolean}>`
+  color: ${(props) => (props.positive ? 'green' : 'red')};
 `;
 
 const TableRow = styled(Layout)`

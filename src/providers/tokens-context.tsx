@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-nocheck
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {useReducerAsync} from 'use-reducer-async';
 import {
   getAllTokenAccountBalances,
@@ -5,7 +8,7 @@ import {
   getSpecificTokenBalances,
 } from '../services/queries';
 
-const TokensContext = React.createContext();
+const TokensContext = React.createContext<any>();
 
 const emptySingleSPLToken = {
   account: undefined,
@@ -92,7 +95,7 @@ function tokensStateReducer(state, action) {
 const asyncActionHandlers = {
   UPDATE_ALL_TOKEN_BALANCES:
     ({dispatch}) =>
-    async action => {
+    async (action) => {
       dispatch({type: 'UPDATE_ALL_TOKEN_BALANCES_STARTED'});
       const response = await getAllTokenAccountBalances(
         action.payload.pubKeyString,
@@ -105,7 +108,7 @@ const asyncActionHandlers = {
     },
   UPDATE_ALL_SPL_TOKEN_PRICES:
     ({dispatch, getState}) =>
-    async action => {
+    async (action) => {
       dispatch({type: 'UPDATE_ALL_SPL_TOKEN_PRICES_START'});
       if (
         getState().lastPriceUpdate === undefined ||
@@ -128,7 +131,7 @@ const asyncActionHandlers = {
     },
   UPDATE_SPL_TOKENS_AND_PRICES:
     ({dispatch}) =>
-    async action => {
+    async (action) => {
       dispatch({type: 'UPDATE_ALL_TOKEN_BALANCES_STARTED'});
       const response = await getAllTokenAccountBalances(
         action.payload.pubKeyString,
@@ -147,7 +150,7 @@ const asyncActionHandlers = {
     },
   UPDATE_SPECIFIC_SPL_TOKENS:
     ({dispatch, getState}) =>
-    async action => {
+    async (action) => {
       dispatch({type: 'UPDATE_SPECIFIC_TOKENS_STARTED'});
       const response = await getSpecificTokenBalances(
         action.payload.pubKeyString,
