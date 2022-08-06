@@ -47,7 +47,11 @@ export function getSendSolanaTransaction({
     toPubkey: toPublicKey,
     lamports: lamportsToSend,
   });
-  return new Transaction({feePayer: fromPubkey}).add(ix);
+  const tx = new Transaction();
+  tx.feePayer = fromPubkey;
+  tx.add(ix);
+
+  return tx
 }
 
 export async function sendSolanaUsingKeyPair({
@@ -72,10 +76,10 @@ export async function sendSolanaUsingKeyPair({
     lamports: lamportsToSend,
   });
 
-  const tx = new Transaction({
-    recentBlockhash,
-    feePayer: from_pubkey,
-  }).add(ix);
+  const tx = new Transaction()
+  tx.feePayer = from_pubkey;
+  tx.recentBlockhash = recentBlockhash;
+  tx.add(ix);
 
   try {
     let signature = await sendAndConfirmTransaction(connection, tx, [
