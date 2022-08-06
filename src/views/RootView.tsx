@@ -1,27 +1,28 @@
 // Nav Imports
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 // Screens
-import {ManageWalletsScreen} from './ManageWallets/index.js';
-import {WalletStack} from './Wallet';
+import {CameraScreen} from './CameraScreen';
+import {ManageWalletsScreen} from './ManageWallets/index';
 import {Settings} from './Settings';
-import {CameraScreen} from './CameraScreen.js';
+import {WalletStack} from './Wallet';
 
 // Components
-import {MainHeader} from '../components/MainHeader.jsx';
-import {StackHeader} from '../components/Common';
 import {BottomTabBar} from '../components/BottomNavigation';
+import {StackHeader} from '../components/Common';
+import {MainHeader} from '../components/MainHeader';
 
 // Splash Screen
-import RNBootSplash from 'react-native-bootsplash';
 import {NavigationContainer} from '@react-navigation/native';
+import RNBootSplash from 'react-native-bootsplash';
 
 // Drawer Imports
-import {DrawerContainer} from '../components/DrawerContainer.jsx';
-import {ViewTransactionScreen} from './ViewTransaction.js';
-import {BrowserView} from './Browser/index.tsx';
+import React from 'react';
+import {DrawerContainer} from '../components/DrawerContainer';
+import {BrowserView} from './Browser/index';
+import {ViewTransactionScreen} from './ViewTransaction';
 
 const BottomTabs = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();
