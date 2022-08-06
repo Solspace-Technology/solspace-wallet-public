@@ -5,8 +5,7 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 
 // Screens
 import {ManageWalletsScreen} from './ManageWallets/index.js';
-import {WalletStack} from './Wallet';
-import {SwapStack} from './Swap';
+import {WalletStack} from './Wallet'; 
 import {Settings} from './Settings';
 import {CameraScreen} from './CameraScreen.js';
 
@@ -40,14 +39,7 @@ const DrawerViews = () => (
         header: MainHeader,
       }}
     />
-    <BottomTabs.Screen
-      name="Swap"
-      component={SwapStack}
-      options={{
-        headerShown: true,
-        header: MainHeader,
-      }}
-    />
+
     <BottomTabs.Screen name="Browser" component={BrowserView} />
     <BottomTabs.Screen name="Settings" component={Settings} />
   </BottomTabs.Navigator>

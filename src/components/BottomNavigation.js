@@ -14,7 +14,6 @@ export const BottomTabBar = ({navigation, state}) => (
     selectedIndex={state.index}
     onSelect={index => navigation.navigate(state.routeNames[index])}>
     <BottomNavigationTab title="Wallet" icon={WalletIcon} />
-    <BottomNavigationTab title="Swap" icon={SwapIcon} />
     <BottomNavigationTab title="Browser" icon={BrowserIcon} />
     <BottomNavigationTab title="Settings" icon={StylesIcon} />
   </StyledBottomNavigation>
