@@ -1,10 +1,12 @@
-import {ScreenBase} from '../../components/Common';
 import {Button, Spinner, Text, Tooltip} from '@ui-kitten/components';
+import {ScreenBase} from '../../components/Common';
 
-import {useAppState} from '../../providers/appState-context';
-import {decryptData} from '../../modules/security';
-import {Alert, TouchableWithoutFeedback, View} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
+import React from 'react';
+import {Alert, TouchableWithoutFeedback, View} from 'react-native';
+import styled from 'styled-components/native';
+import {decryptData} from '../../modules/security';
+import {useAppState} from '../../providers/appState-context';
 
 export function ExportKeyphraseScreen() {
   const {state: appState, dispatch: appStateDispatch} = useAppState();
@@ -14,8 +16,8 @@ export function ExportKeyphraseScreen() {
 
   async function getKeyphrase() {
     try {
-      let encryptedSeedPhrase = appState?.encryptedSeedPhrase;
-      let decryptedSeedPhrase = await decryptData(encryptedSeedPhrase);
+      const encryptedSeedPhrase = appState?.encryptedSeedPhrase;
+      const decryptedSeedPhrase = await decryptData(encryptedSeedPhrase);
       setKeyphrase(decryptedSeedPhrase);
     } catch (error) {
       console.log('Unable to get keychain data', error);

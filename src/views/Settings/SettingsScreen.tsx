@@ -1,29 +1,30 @@
+import {Button, Layout, List, Text, Toggle} from '@ui-kitten/components';
 import {Alert} from 'react-native';
-import {Text, List, Toggle, Button, Layout} from '@ui-kitten/components';
 
-import {ScreenBase, ListItem} from '../../components/Common';
+import {ListItem, ScreenBase} from '../../components/Common';
 
-import {useAppState} from '../../providers/appState-context';
-import {useWallet} from '../../providers/wallet-context';
-import {useTokensState} from '../../providers/tokens-context';
 import {useNavigation} from '@react-navigation/native';
+import {useAppState} from '../../providers/appState-context';
+import {useTokensState} from '../../providers/tokens-context';
+import {useWallet} from '../../providers/wallet-context';
 
-import {decryptData, resetEncryptionKey} from '../../modules/security';
+import {resetEncryptionKey} from '../../modules/security';
 
 import {requestAirdrop} from '../../services/transactions';
-import {View} from 'react-native';
 
+import React from 'react';
+import styled from 'styled-components/native';
 import {logAllStoredData} from '../../modules/utils';
 
 export function SettingsScreen() {
   const {state: appState, dispatch: appStateDispatch} = useAppState();
   const {state: walletState, dispatch: walletStateDispatch} = useWallet();
-  const {state: tokenState, dispatch: tokenDispatch} = useTokensState();
+  const {dispatch: tokenDispatch} = useTokensState();
 
   const navigation = useNavigation();
 
   const [isAirdropLoading, setIsAirdropLoading] = React.useState(false);
-  let network = appState.settings.find(({name}) => name === 'network').value;
+  const network = appState.settings.find(({name}) => name === 'network').value;
 
   const canAirdrop = network === 'devnet' || network === 'testnet';
 
@@ -85,7 +86,7 @@ export function SettingsScreen() {
         {
           text: 'Load Data',
           onPress: () => {
-            navigation.navigate('Import Data');
+            navigation.navigate('Import Data' as never);
           },
           style: 'destructive',
         },
@@ -95,7 +96,7 @@ export function SettingsScreen() {
 
   // Screen specific helper functions
   function updateSettings(settingsItem) {
-    const newSettings = appState.settings.map(oldItem => {
+    const newSettings = appState.settings.map((oldItem) => {
       if (oldItem.name === settingsItem.name) {
         return settingsItem;
       }
@@ -108,12 +109,12 @@ export function SettingsScreen() {
     await logAllStoredData();
   }
 
-  function RenderListItem({item, index}) {
+  function RenderListItem({item}) {
     if (item.name === 'network') {
       return (
         <ListItem left={item?.label}>
           <Button
-            onPress={() => navigation.navigate('Network Select')}
+            onPress={() => navigation.navigate('Network Select' as never)}
             appearance="outline"
             status="info">
             {item.value}
@@ -162,7 +163,7 @@ export function SettingsScreen() {
           <ListItem
             center={item?.label}
             outline={item.outline}
-            onPress={() => navigation.navigate('Export Keyphrase')}
+            onPress={() => navigation.navigate('Export Keyphrase' as never)}
           />
         );
       } else if (
@@ -195,7 +196,7 @@ export function SettingsScreen() {
     if (walletState?.activeWallet?.pubKeyString) {
       try {
         setIsAirdropLoading(true);
-        let {data, error} = await requestAirdrop(
+        const {data, error} = await requestAirdrop(
           walletState.activeWallet.pubKeyString,
           navigation,
           {network},
@@ -215,8 +216,8 @@ export function SettingsScreen() {
       <ScreenHeading category="h1">Settings</ScreenHeading>
       <InnerContainer>
         <StyledList
-          renderItem={({item, index}) => (
-            <RenderListItem item={{...item}} index={index} />
+          renderItem={({item}: {item: any}) => (
+            <RenderListItem item={{...item}} />
           )}
           data={appState.settings}
         />

@@ -1,38 +1,37 @@
+import {Button, Text} from '@ui-kitten/components';
 import {ScreenBase} from '../../components/Common';
-import {Button, Input, Text} from '@ui-kitten/components';
 
-import {useAppState} from '../../providers/appState-context';
-import {useWallet} from '../../providers/wallet-context';
+import {useNavigation} from '@react-navigation/native';
+import React from 'react';
 import {
   Alert,
   Keyboard,
   KeyboardAvoidingView,
   TextInput,
   TouchableWithoutFeedback,
+  View,
 } from 'react-native';
-import {View} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import styled from 'styled-components/native';
 import {encryptData} from '../../modules/security';
 import {useTokensState} from '../../providers/tokens-context';
+import {useWallet} from '../../providers/wallet-context';
 
 export function ImportDataScreen() {
-  const {state: walletState, dispatch: walletDispatch} = useWallet();
+  const {dispatch: walletDispatch} = useWallet();
   const {dispatch: tokenDispatch} = useTokensState();
 
   const navigation = useNavigation();
 
-  const [walletStateLoaded, setWalletStateLoaded] = React.useState(false);
-
-  const [inputState, setInputState] = React.useState();
+  const [inputState, setInputState] = React.useState<string | undefined>();
 
   async function onImportPress() {
-    let data = JSON.parse(inputState);
+    const data = JSON.parse(inputState);
     console.log('importing wallet data');
     if (data?.value?.wallets && data?.value?.activeWallet) {
       tokenDispatch({type: 'CLEAR_STATE'});
       walletDispatch({type: 'RESTORE_STATE', payload: data.value});
       // re encrypt secret keys here:
-      for (let wallet of data.value.wallets) {
+      for (const wallet of data.value.wallets) {
         if (wallet.type === 'keypair') {
           wallet.secretKey = await encryptData(wallet.secretKey);
           console.log(' wallet.secretKey', wallet.secretKey);
@@ -52,7 +51,7 @@ export function ImportDataScreen() {
             <TextInput
               multiline
               value={inputState}
-              onChangeText={setInputState}
+              onChange={(text) => setInputState(text.nativeEvent.text)}
               style={{
                 backgroundColor: '#ffffff90',
                 marginBottom: 5,

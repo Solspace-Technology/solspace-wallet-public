@@ -1,5 +1,6 @@
-import {ScreenBase} from '../../components/Common';
 import {Button} from '@ui-kitten/components';
+import styled from 'styled-components/native';
+import {ScreenBase} from '../../components/Common';
 
 import {useAppState} from '../../providers/appState-context';
 
@@ -10,11 +11,11 @@ export function NetworkSelectScreen() {
     dispatch({type: 'UPDATE_NETWORK', payload});
   }
 
-  let networkOptions = appState.settings.find(({name}) => name === 'network');
+  const networkOptions = appState.settings.find(({name}) => name === 'network');
 
   return (
     <Container>
-      {networkOptions.possibleValues.map(value => (
+      {networkOptions.possibleValues.map((value) => (
         <NetworkButton
           status="info"
           disabled={value === networkOptions.value}

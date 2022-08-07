@@ -1,13 +1,38 @@
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {
+  createNativeStackNavigator,
+  NativeStackHeaderProps,
+} from '@react-navigation/native-stack';
 
-import {SettingsScreen} from './SettingsScreen';
-import {NetworkSelectScreen} from './NetworkSelect';
 import {ExportKeyphraseScreen} from './ExportKeyphraseScreen';
+import {NetworkSelectScreen} from './NetworkSelect';
+import {SettingsScreen} from './SettingsScreen';
 
 import {StackHeader} from '../../components/Common';
 import {ImportDataScreen} from './ImportDataScreen';
 
 const {Navigator, Screen} = createNativeStackNavigator();
+
+const NetworkSelectHeader = (props: NativeStackHeaderProps) => (
+  <StackHeader
+    title="Select Network"
+    leftIconName="arrowhead-down-outline"
+    {...props}
+  />
+);
+const ExportKeyphraseHeader = (props: NativeStackHeaderProps) => (
+  <StackHeader
+    title="Export Keyphrase"
+    leftIconName="arrowhead-down-outline"
+    {...props}
+  />
+);
+const ImportDataHeader = (props: NativeStackHeaderProps) => (
+  <StackHeader
+    title="Import Data"
+    leftIconName="arrowhead-down-outline"
+    {...props}
+  />
+);
 
 export const Settings = () => (
   <Navigator screenOptions={{headerShown: false}}>
@@ -18,13 +43,7 @@ export const Settings = () => (
       options={{
         headerShown: true,
         presentation: 'modal',
-        header: props => (
-          <StackHeader
-            title="Select Network"
-            leftIconName="arrowhead-down-outline"
-            {...props}
-          />
-        ),
+        header: NetworkSelectHeader,
       }}
     />
     <Screen
@@ -33,13 +52,7 @@ export const Settings = () => (
       options={{
         headerShown: true,
         presentation: 'modal',
-        header: props => (
-          <StackHeader
-            title="Export Keyphrase"
-            leftIconName="arrowhead-down-outline"
-            {...props}
-          />
-        ),
+        header: ExportKeyphraseHeader,
       }}
     />
     <Screen
@@ -48,13 +61,7 @@ export const Settings = () => (
       options={{
         headerShown: true,
         presentation: 'modal',
-        header: props => (
-          <StackHeader
-            title="Import Data"
-            leftIconName="arrowhead-down-outline"
-            {...props}
-          />
-        ),
+        header: ImportDataHeader,
       }}
     />
   </Navigator>

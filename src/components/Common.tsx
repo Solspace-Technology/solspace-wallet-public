@@ -41,7 +41,7 @@ export const LightText = styled.Text`
 `;
 
 //* Components:
-interface ListItemProps extends PropsWithChildren<typeof TouchableOpacity> {
+interface ListItemProps extends PropsWithChildren<any> {
   left?: any;
   right?: any;
   center?: any;
