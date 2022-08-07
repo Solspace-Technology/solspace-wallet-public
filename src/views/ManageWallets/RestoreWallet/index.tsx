@@ -40,6 +40,7 @@ export function RestoreWalletScreen() {
         size="large"
         value={secretKey}
         onChangeText={(value) => setSecretKey(value)}
+        data-private="lipsum"
       />
       {error && (
         <StyledText category="c1" status="danger">

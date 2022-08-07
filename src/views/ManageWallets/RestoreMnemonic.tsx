@@ -111,6 +111,7 @@ export function RestoreMnemonicScreen() {
                   size="large"
                   value={newMnemonic}
                   onChangeText={(value) => setNewMnemonic(value)}
+                  data-private="lipsum"
                 />
                 <StyledButton size="giant" onPress={onSaveClick}>
                   Save Phrase
@@ -129,6 +130,7 @@ export function RestoreMnemonicScreen() {
                   size="large"
                   value={mnemonic}
                   onChangeText={(value) => setMnemonic(value)}
+                  data-private="lipsum"
                 />
                 <StyledText category="p1">
                   If you already created a mnemonic in Soladex Wallet importing

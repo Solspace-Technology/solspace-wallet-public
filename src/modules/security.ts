@@ -38,7 +38,7 @@ export async function getEncryptionKey() {
 
 export async function resetEncryptionKey() {
   try {
-    let reset = await Keychain.resetGenericPassword();
+    const reset = await Keychain.resetGenericPassword();
     console.log('encryption key cleared');
     return reset;
   } catch (error) {
@@ -54,21 +54,24 @@ export async function resetEncryptionKey() {
 
 export async function encryptData(data) {
   const encryptionKey = await getEncryptionKey();
-  let encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), encryptionKey.key);
+  const encrypted = CryptoJS.AES.encrypt(
+    JSON.stringify(data),
+    encryptionKey.key,
+  );
   return encrypted.toString();
 }
 
 export async function decryptData(data) {
   const encryptionKey = await getEncryptionKey();
-  let decrypted = CryptoJS.AES.decrypt(data, encryptionKey.key);
-  let unParsed = decrypted.toString(CryptoJS.enc.Utf8);
+  const decrypted = CryptoJS.AES.decrypt(data, encryptionKey.key);
+  const unParsed = decrypted.toString(CryptoJS.enc.Utf8);
   return JSON.parse(unParsed);
 }
 
 export async function getKeypairFromEncryptedSecretKey(secretKey) {
   const decryptedKey = await decryptData(secretKey);
   try {
-    let keypair = getKeypairFromSecretKey(decryptedKey);
+    const keypair = getKeypairFromSecretKey(decryptedKey);
     return {keypair, error: null};
   } catch (e) {
     console.log(e);

@@ -59,6 +59,7 @@ export function CreateNewWalletScreen() {
 
       {/* // TODO: create my own component that does this a little better */}
       <WalletPhraseBox
+        data-private="lipsum"
         multiline={true}
         textStyle={{
           minHeight: 128,

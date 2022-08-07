@@ -1,5 +1,3 @@
-global.Buffer = global.Buffer || require('buffer').Buffer;
-
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import {useState} from 'react';
 

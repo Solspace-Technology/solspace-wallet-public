@@ -1,7 +1,9 @@
 /* eslint-disable no-bitwise */
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import {
+  Cluster,
   clusterApiUrl,
+  Commitment,
   Connection,
   PublicKey,
   sendAndConfirmRawTransaction,
@@ -10,9 +12,6 @@ import {
 } from '@solana/web3.js';
 import bs58 from 'bs58';
 import {Buffer} from 'buffer';
-
-import {Token, TOKEN_PROGRAM_ID} from '@solana/spl-token';
-import base58 from 'bs58';
 
 //* LEGDER COMM CONSTANTS
 const INS_GET_PUBKEY = 0x05;
@@ -23,22 +22,23 @@ const P2_EXTEND = 0x01;
 const P2_MORE = 0x02;
 const MAX_PAYLOAD = 255;
 const LEDGER_CLA = 0xe0;
-const STATUS_OK = 0x9000;
+// const STATUS_OK = 0x9000;
 
 //* Helper function for chunked send of larger payloads
 async function solana_send(transport, instruction, p1, payload) {
-  var p2 = 0;
-  var payload_offset = 0;
+  let p2 = 0;
+  let payload_offset = 0;
   if (payload.length > MAX_PAYLOAD) {
     while (payload.length - payload_offset > MAX_PAYLOAD) {
       const buf = payload.slice(payload_offset, payload_offset + MAX_PAYLOAD);
       payload_offset += MAX_PAYLOAD;
-      console.log(
-        'send',
-        (p2 | P2_MORE).toString(16),
-        buf.length.toString(16),
-        buf,
-      );
+      // console.log(
+      //   'send',
+      //   (p2 | P2_MORE).toString(16),
+      //   buf.length.toString(16),
+      //   buf,
+      // );
+      // eslint-disable-next-line no-await-in-loop
       const reply = await transport.send(
         LEDGER_CLA,
         instruction,
@@ -48,10 +48,7 @@ async function solana_send(transport, instruction, p1, payload) {
       );
       // eslint-disable-next-line eqeqeq
       if (reply.length != 2) {
-        throw new Error(
-          'solana_send: Received unexpected reply payload',
-          'UnexpectedReplyPayload',
-        );
+        throw new Error('solana_send: Received unexpected reply payload');
       }
       p2 |= P2_EXTEND;
     }
@@ -75,7 +72,7 @@ function _harden(n) {
   return (n | BIP32_HARDENED_BIT) >>> 0;
 }
 
-function solana_derivation_path(account, change) {
+function solana_derivation_path(account?: any, change?: any) {
   let length;
   if (typeof account === 'number') {
     if (typeof change === 'number') {
@@ -86,8 +83,8 @@ function solana_derivation_path(account, change) {
   } else {
     length = 2;
   }
-  var derivation_path = Buffer.alloc(1 + length * 4);
-  var offset = 0;
+  const derivation_path = Buffer.alloc(1 + length * 4);
+  let offset = 0;
   offset = derivation_path.writeUInt8(length, offset);
   offset = derivation_path.writeUInt32BE(_harden(44), offset); // Using BIP44
   offset = derivation_path.writeUInt32BE(_harden(501), offset); // Solana's BIP44 path
@@ -95,6 +92,7 @@ function solana_derivation_path(account, change) {
   if (length > 2) {
     offset = derivation_path.writeUInt32BE(_harden(account), offset);
     if (length === 4) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       offset = derivation_path.writeUInt32BE(_harden(change), offset);
     }
   }
@@ -108,7 +106,6 @@ function derivation_path_from_string(string) {
       return solana_derivation_path(
         parseInt(inputs[2], 10),
         parseInt(inputs[3], 10),
-        10,
       );
     } else {
       return solana_derivation_path(parseInt(inputs[2], 10));
@@ -134,7 +131,7 @@ async function solana_ledger_sign_transaction(
   const msg_bytes = transaction.compileMessage().serialize();
 
   // XXX: Ledger app only supports a single derivation_path per call ATM
-  var num_paths = Buffer.alloc(1);
+  const num_paths = Buffer.alloc(1);
   num_paths.writeUint8(1);
 
   const payload = Buffer.concat([num_paths, derivation_path, msg_bytes]);
@@ -144,12 +141,12 @@ async function solana_ledger_sign_transaction(
 
 async function solana_ledger_sign_message({
   transport,
-  encodedMessage, // base58 encoded message
+  encodedMessage, // bs58 encoded message
   derivation_path,
 }) {
-  const msg_bytes = base58.decode(encodedMessage);
+  const msg_bytes = bs58.decode(encodedMessage);
 
-  var num_paths = Buffer.alloc(1);
+  const num_paths = Buffer.alloc(1);
   num_paths.writeUint8(1);
 
   const payload = Buffer.concat([num_paths, derivation_path, msg_bytes]);
@@ -160,11 +157,11 @@ async function solana_ledger_sign_message({
 async function process_solana_transactions_ledger({
   fromDerivationPathString,
   deviceId,
-  network = 'devnet',
+  network = 'devnet' as Cluster,
   transactions = [],
-  confirmation = 'finalized',
+  confirmation = 'confirmed' as Commitment,
   confirmOptions = {},
-  connection,
+  connection = undefined,
 }) {
   let error = null;
 
@@ -172,7 +169,7 @@ async function process_solana_transactions_ledger({
     if (!connection) {
       connection = new Connection(
         clusterApiUrl(network),
-        confirmation || 'finalized',
+        confirmation || 'confirmed',
       );
     }
 
@@ -275,7 +272,7 @@ export async function sendSolanaUsingLedger({
   fromDerivationPathString,
   fromPubkey,
   deviceId,
-  network = 'devnet',
+  network = 'devnet' as Cluster,
   toPublicKey,
   lamportsToSend,
 }) {
@@ -295,118 +292,11 @@ export async function sendSolanaUsingLedger({
   });
 }
 
-export async function sendSPLTokenUsingLedger({
-  fromDerivationPathString,
-  fromPubKeyString,
-  deviceId,
-  toPublicKey,
-  mint,
-  tokensToSend,
-  decimals = 6,
-  network = 'devnet',
-  confirmation = 'finalized',
-  confirmOptions = {commitment: 'confirmed'},
-}) {
-  console.log('fromPubKeyString', fromPubKeyString);
-  console.log('toPublicKey', toPublicKey);
-  console.log('mint', mint);
-
-  let error;
-  try {
-    const connection = new Connection(clusterApiUrl(network), confirmation);
-
-    const from_pubkey = new PublicKey(fromPubKeyString);
-    const to_pubkey = new PublicKey(toPublicKey);
-    const mint_public_key = new PublicKey(mint);
-
-    const mint_token = new Token(
-      connection,
-      mint_public_key,
-      TOKEN_PROGRAM_ID,
-      from_pubkey,
-    );
-
-    const from_token_account = await mint_token
-      .getOrCreateAssociatedAccountInfo(from_pubkey)
-      .catch((e) => {
-        console.log(e);
-        error = {
-          name: 'TokenAcctErr',
-          message:
-            'Unable to retrieve token account. Please check your connection and try again.',
-        };
-      });
-
-    const to_token_address = await Token.getAssociatedTokenAddress(
-      mint_token.associatedProgramId,
-      mint_token.programId,
-      mint_public_key,
-      to_pubkey,
-    ).catch((e) => {
-      console.log(e);
-      error = {
-        name: 'TokenAcctErr',
-        message:
-          'Unable to retrieve address for receiver public key. Please make sure you are using a solana address.',
-      };
-    });
-
-    const to_token_account = await connection
-      .getAccountInfo(to_token_address)
-      .catch((e) => {
-        console.log(e);
-        error = {
-          name: 'TokenAcctErr',
-          message:
-            'Unable to retrieve token account. Please check your connection and try again.',
-        };
-      });
-
-    const ix = [];
-
-    if (to_token_account === null) {
-      ix.push(
-        Token.createAssociatedTokenAccountInstruction(
-          mint_token.associatedProgramId,
-          mint_token.programId,
-          mint_public_key,
-          to_token_address,
-          to_pubkey,
-          from_pubkey,
-        ),
-      );
-    }
-
-    ix.push(
-      Token.createTransferInstruction(
-        TOKEN_PROGRAM_ID,
-        from_token_account.address,
-        to_token_address,
-        from_pubkey,
-        [],
-        tokensToSend * Math.pow(10, decimals),
-      ),
-    );
-
-    return process_solana_transactions_ledger({
-      fromDerivationPathString,
-      deviceId,
-      network,
-      transactions: ix,
-      confirmation,
-      confirmOptions,
-    });
-  } catch (e) {
-    console.log(e);
-    return {signature: null, error};
-  }
-}
-
 export async function executeSwapUsingLedger({
   fromDerivationPathString,
   deviceId,
-  network = 'devnet',
-  confirmation = 'finalized',
+  network = 'devnet' as Cluster,
+  confirmation = 'confirmed' as Commitment,
   transactions,
   connection,
 }) {

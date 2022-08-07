@@ -84,9 +84,7 @@ export class SolspaceWalletProvider {
         this.encryptedSecretKey,
       );
       console.log('e', e);
-      console.log('keypair', keypair);
       if (keypair) {
-        console.log('keypairObject', keypair);
         transaction.recentBlockhash = (
           await this.connection.getRecentBlockhash()
         ).blockhash;
@@ -182,7 +180,6 @@ export class SolspaceWalletProvider {
       if (e) {
         console.log('Keypair error', e);
       }
-      console.log('keypair', keypair);
 
       const signatures = [];
 
