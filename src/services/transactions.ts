@@ -1,14 +1,16 @@
+import {Token, TOKEN_PROGRAM_ID} from '@solana/spl-token';
 import {
-  PublicKey,
-  LAMPORTS_PER_SOL,
+  Cluster,
   clusterApiUrl,
+  Commitment,
   Connection,
+  Keypair,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  sendAndConfirmTransaction,
   SystemProgram,
   Transaction,
-  Keypair,
-  sendAndConfirmTransaction,
 } from '@solana/web3.js';
-import {Token, TOKEN_PROGRAM_ID} from '@solana/spl-token';
 import {processingToast, successToast} from '../components/ToastFunctions';
 
 export async function requestAirdrop(
@@ -22,12 +24,12 @@ export async function requestAirdrop(
   } else {
     publicKey = pubKey;
   }
-  let transferAmount = amount * LAMPORTS_PER_SOL;
-  let connection = new Connection(clusterApiUrl(network));
+  const transferAmount = amount * LAMPORTS_PER_SOL;
+  const connection = new Connection(clusterApiUrl(network as Cluster));
 
   try {
     processingToast();
-    let sig = await connection.requestAirdrop(publicKey, transferAmount);
+    const sig = await connection.requestAirdrop(publicKey, transferAmount);
     await connection.confirmTransaction(sig);
     successToast(sig, network, navigation);
     return {data: sig, error: null};
@@ -51,7 +53,7 @@ export function getSendSolanaTransaction({
   tx.feePayer = fromPubkey;
   tx.add(ix);
 
-  return tx
+  return tx;
 }
 
 export async function sendSolanaUsingKeyPair({
@@ -60,15 +62,15 @@ export async function sendSolanaUsingKeyPair({
   lamportsToSend,
   network = 'devnet',
 }) {
-  let connection = new Connection(clusterApiUrl(network));
+  const connection = new Connection(clusterApiUrl(network as Cluster));
 
   const recentBlockhashObj = await connection.getRecentBlockhash();
   const recentBlockhash = recentBlockhashObj.blockhash;
 
   const fromWallet = Keypair.fromSecretKey(keypair.secretKey);
 
-  let from_pubkey = new PublicKey(keypair.publicKey.toString());
-  let to_pubkey = new PublicKey(toPublicKey);
+  const from_pubkey = new PublicKey(keypair.publicKey.toString());
+  const to_pubkey = new PublicKey(toPublicKey);
 
   const ix = SystemProgram.transfer({
     fromPubkey: from_pubkey,
@@ -76,13 +78,13 @@ export async function sendSolanaUsingKeyPair({
     lamports: lamportsToSend,
   });
 
-  const tx = new Transaction()
+  const tx = new Transaction();
   tx.feePayer = from_pubkey;
   tx.recentBlockhash = recentBlockhash;
   tx.add(ix);
 
   try {
-    let signature = await sendAndConfirmTransaction(connection, tx, [
+    const signature = await sendAndConfirmTransaction(connection, tx, [
       fromWallet,
     ]);
     // let signature = await connection.sendTransaction(tx, [fromWallet]);
@@ -110,15 +112,11 @@ export async function getSendSPLTokenTransaction({
   connection,
   network = 'devnet',
 }) {
-  console.log('runnning');
-  console.log('fromPubKey', fromPubKey);
-  console.log('toPublicKey', toPublicKey);
-  console.log('mint', mint);
   if (!connection) {
-    connection = new Connection(clusterApiUrl(network), 'confirmed');
+    connection = new Connection(clusterApiUrl(network as Cluster), 'confirmed');
   }
   // SENDER INFO
-  let from_pub_key = new PublicKey(fromPubKey);
+  const from_pub_key = new PublicKey(fromPubKey);
 
   // TOKEN INFO
   const mintPublicKey = new PublicKey(mint);
@@ -126,6 +124,9 @@ export async function getSendSPLTokenTransaction({
     connection,
     mintPublicKey,
     TOKEN_PROGRAM_ID,
+    //* Signing out of band
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
     from_pub_key,
   );
 
@@ -180,8 +181,11 @@ export async function sendSPLTokenUsingKeypair({
   network = 'devnet',
 }) {
   // SENDER INFO
-  let connection = new Connection(clusterApiUrl(network), 'confirmed');
-  var from_wallet = Keypair.fromSecretKey(keypair.secretKey);
+  const connection = new Connection(
+    clusterApiUrl(network as Cluster),
+    'confirmed' as Commitment,
+  );
+  const from_wallet = Keypair.fromSecretKey(keypair.secretKey);
 
   // TOKEN INFO
   const mintPublicKey = new PublicKey(mint);
@@ -189,6 +193,9 @@ export async function sendSPLTokenUsingKeypair({
     connection,
     mintPublicKey,
     TOKEN_PROGRAM_ID,
+    //* Signing out of band
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
     from_wallet.publicKey,
   );
 
