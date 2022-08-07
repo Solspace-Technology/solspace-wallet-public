@@ -8,6 +8,7 @@ import {
 import {getKeypairFromEncryptedSecretKey} from './security';
 
 import nacl from 'tweetnacl';
+import {errorToast} from '../components/ToastFunctions';
 
 type Args = {
   connection: Connection;
@@ -60,25 +61,30 @@ export class SolspaceWalletProvider {
         await this.connection.getRecentBlockhash()
       ).blockhash;
       transaction.feePayer = this.publicKey;
-      let result = await signTransactionUsingLedger({
+      const result = await signTransactionUsingLedger({
         fromDerivationPathString: this.derivationPath,
         deviceId: this.ledgerID,
         transaction,
       });
       console.log('result', result);
-      let {rawSignature} = result;
-      transaction.addSignature(this.publicKey, rawSignature);
-      return transaction;
+      const {rawSignature} = result;
+      if (rawSignature) {
+        transaction.addSignature(this.publicKey, rawSignature);
+        return transaction;
+      } else {
+        errorToast({
+          name: 'Signature Error',
+          message: 'Unable to sign transaction.',
+        });
+      }
     } else if (this.walletType === 'keypair') {
       // sign transaction with keypair here.
       console.log('this.encryptedSecretKey', this.encryptedSecretKey);
-      let {keypair, e} = await getKeypairFromEncryptedSecretKey(
+      const {keypair, e} = await getKeypairFromEncryptedSecretKey(
         this.encryptedSecretKey,
       );
       console.log('e', e);
-      console.log('keypair', keypair);
       if (keypair) {
-        console.log('keypairObject', keypair);
         transaction.recentBlockhash = (
           await this.connection.getRecentBlockhash()
         ).blockhash;
@@ -98,7 +104,7 @@ export class SolspaceWalletProvider {
   }> {
     // check for wallet type and sign here then return
     if (this.walletType === 'ledger') {
-      let result = await signMessageUsingLedger({
+      const result = await signMessageUsingLedger({
         encodedMessage: message,
         fromDerivationPathString: this.derivationPath,
         deviceId: this.ledgerID,
@@ -112,13 +118,15 @@ export class SolspaceWalletProvider {
         },
       };
     } else if (this.walletType === 'keypair') {
-      let {keypair, e} = await getKeypairFromEncryptedSecretKey(
+      const {keypair, e} = await getKeypairFromEncryptedSecretKey(
         this.encryptedSecretKey,
       );
-      if (e) console.log('"keypair error:', e);
+      if (e) {
+        console.log('"keypair error:', e);
+      }
 
       // This is used instead to sign the raw message instead of the transaction
-      let signature = nacl.sign.detached(
+      const signature = nacl.sign.detached(
         base58.decode(message),
         keypair.secretKey,
       );
@@ -142,9 +150,9 @@ export class SolspaceWalletProvider {
   }> {
     // check for wallet type and sign here then return
     if (this.walletType === 'ledger') {
-      let signatures = [];
-      for (let message of messages) {
-        let result = await signMessageUsingLedger({
+      const signatures = [];
+      for (const message of messages) {
+        const result = await signMessageUsingLedger({
           encodedMessage: message,
           fromDerivationPathString: this.derivationPath,
           deviceId: this.ledgerID,
@@ -166,16 +174,17 @@ export class SolspaceWalletProvider {
       };
     } else if (this.walletType === 'keypair') {
       // sign transaction with keypair here.
-      let {keypair, e} = await getKeypairFromEncryptedSecretKey(
+      const {keypair, e} = await getKeypairFromEncryptedSecretKey(
         this.encryptedSecretKey,
       );
-      if (e) console.log('Keypair error', e);
-      console.log('keypair', keypair);
+      if (e) {
+        console.log('Keypair error', e);
+      }
 
-      let signatures = [];
+      const signatures = [];
 
-      for (let message of messages) {
-        let signature = nacl.sign.detached(
+      for (const message of messages) {
+        const signature = nacl.sign.detached(
           base58.decode(message),
           keypair.secretKey,
         );

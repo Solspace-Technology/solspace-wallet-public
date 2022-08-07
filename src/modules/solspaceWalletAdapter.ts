@@ -3,7 +3,6 @@ import {
   scopePollingDetectionStrategy,
   WalletAccountError,
   WalletConnectionError,
-  WalletDisconnectionError,
   WalletError,
   WalletName,
   WalletNotConnectedError,
@@ -86,9 +85,12 @@ export class SolspaceWalletAdapter extends BaseMessageSignerWalletAdapter {
 
   async connect(): Promise<void> {
     try {
-      if (this.connected || this.connecting) return;
-      if (this._readyState !== WalletReadyState.Installed || !window.Solspace)
+      if (this.connected || this.connecting) {
+        return;
+      }
+      if (this._readyState !== WalletReadyState.Installed || !window.Solspace) {
         throw new WalletNotReadyError();
+      }
 
       this._connecting = true;
 
@@ -98,7 +100,7 @@ export class SolspaceWalletAdapter extends BaseMessageSignerWalletAdapter {
       try {
         // This might work?
         let parsed;
-        window.addEventListener('message', e => {
+        window.addEventListener('message', (e) => {
           parsed = JSON.parse(e.data);
         });
         await wallet.connect();
@@ -110,7 +112,9 @@ export class SolspaceWalletAdapter extends BaseMessageSignerWalletAdapter {
         throw new WalletConnectionError(error?.message, error);
       }
 
-      if (!data.publicKey) throw new WalletAccountError();
+      if (!data.publicKey) {
+        throw new WalletAccountError();
+      }
 
       let publicKey: PublicKey;
       try {
@@ -157,14 +161,17 @@ export class SolspaceWalletAdapter extends BaseMessageSignerWalletAdapter {
   async signTransaction(transaction: Transaction): Promise<Transaction> {
     try {
       const wallet = this._wallet;
-      if (!wallet) throw new WalletNotConnectedError();
+      if (!wallet) {
+        throw new WalletNotConnectedError();
+      }
 
       try {
         const message = bs58.encode(transaction.serializeMessage());
         const {msg, data} = await wallet.signTransaction(message);
 
-        if (!data.publicKey || !data.signature)
+        if (!data.publicKey || !data.signature) {
           throw new WalletSignTransactionError(msg);
+        }
 
         const publicKey = new PublicKey(data.publicKey);
         const signature = bs58.decode(data.signature);
@@ -172,7 +179,9 @@ export class SolspaceWalletAdapter extends BaseMessageSignerWalletAdapter {
         transaction.addSignature(publicKey, signature);
         return transaction;
       } catch (error: any) {
-        if (error instanceof WalletError) throw error;
+        if (error instanceof WalletError) {
+          throw error;
+        }
         throw new WalletSignTransactionError(error?.message, error);
       }
     } catch (error: any) {
@@ -186,17 +195,20 @@ export class SolspaceWalletAdapter extends BaseMessageSignerWalletAdapter {
   ): Promise<Transaction[]> {
     try {
       const wallet = this._wallet;
-      if (!wallet) throw new WalletNotConnectedError();
+      if (!wallet) {
+        throw new WalletNotConnectedError();
+      }
 
       try {
-        const messages = transactions.map(transaction =>
+        const messages = transactions.map((transaction) =>
           bs58.encode(transaction.serializeMessage()),
         );
         const {msg, data} = await wallet.signAllTransactions(messages);
 
         const length = transactions.length;
-        if (!data.publicKey || data.signatures?.length !== length)
+        if (!data.publicKey || data.signatures?.length !== length) {
           throw new WalletSignTransactionError(msg);
+        }
 
         const publicKey = new PublicKey(data.publicKey);
 
@@ -209,7 +221,9 @@ export class SolspaceWalletAdapter extends BaseMessageSignerWalletAdapter {
 
         return transactions;
       } catch (error: any) {
-        if (error instanceof WalletError) throw error;
+        if (error instanceof WalletError) {
+          throw error;
+        }
         throw new WalletSignTransactionError(error?.message, error);
       }
     } catch (error: any) {
@@ -221,7 +235,9 @@ export class SolspaceWalletAdapter extends BaseMessageSignerWalletAdapter {
   async signMessage(message: Uint8Array): Promise<Uint8Array> {
     try {
       const wallet = this._wallet;
-      if (!wallet) throw new WalletNotConnectedError();
+      if (!wallet) {
+        throw new WalletNotConnectedError();
+      }
 
       try {
         const response = await wallet.signMessage(message);

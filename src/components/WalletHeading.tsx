@@ -3,33 +3,29 @@ import styled from 'styled-components/native';
 import {Layout, Spinner, Text} from '@ui-kitten/components';
 
 import {useTokensState} from '../providers/tokens-context';
-
-import {ThemeVariables} from '../styles/themeVariables';
 import {useGetCurrentColorScheme} from '../hooks/useGetCurrentColorScheme';
-
-const {colors} = ThemeVariables();
 
 export function WalletHeading() {
   const {state: tokenState} = useTokensState();
 
-  const [totalPortfolioChange, setTotalPortfolioChange] = React.useState({
+  const [totalPortfolioChange, setTotalPortfolioChange] = React.useState<any>({
     content: 0,
     color: 'black',
   });
   const isDarkMode = useGetCurrentColorScheme() === 'dark';
 
   React.useEffect(() => {
-    let newChange = tokenState.SPLTokens.reduce((acc, curr) => {
+    const newChange = tokenState.SPLTokens.reduce((acc: number, curr: any) => {
       if (
         curr?.shallowPriceInfo?.usd_24h_change &&
         curr?.account?.data?.parsed?.info?.tokenAmount?.uiAmount &&
         curr?.shallowPriceInfo?.usd
       ) {
-        let tokenHoldings =
+        const tokenHoldings =
           curr?.account?.data?.parsed?.info?.tokenAmount?.uiAmount;
-        let tokenPriceUSD = curr?.shallowPriceInfo?.usd;
-        let USDChange24h = curr?.shallowPriceInfo?.usd_24h_change;
-        let portfolioChange =
+        const tokenPriceUSD = curr?.shallowPriceInfo?.usd;
+        const USDChange24h = curr?.shallowPriceInfo?.usd_24h_change;
+        const portfolioChange =
           (USDChange24h / 100) * tokenPriceUSD * tokenHoldings;
         acc += portfolioChange;
       }
@@ -57,7 +53,7 @@ export function WalletHeading() {
   return (
     <MainCard color="info" isDarkMode={isDarkMode}>
       {tokenState.SPLTokens.length === 0 && tokenState.isSPLTokensLoading ? (
-        <Spinner size="giant" color={colors.primary} />
+        <Spinner size="giant" />
       ) : (
         <>
           <CardRow>
@@ -88,15 +84,16 @@ export function WalletHeading() {
   );
 }
 
-const MainCard = styled(Layout)`
+const MainCard = styled(Layout)<{isDarkMode: boolean; color: string}>`
   min-height: 130px;
   margin: 10px 20px;
   border-radius: 10px;
   padding: 5px 25px;
   align-items: center;
   justify-content: center;
-  border: 2px solid ${props => (props.isDarkMode ? '#ffffff50' : '#00000050')};
-  background-color: ${props => (props.isDarkMode ? '#ffffff15' : '#00000015')};
+  border: 2px solid ${(props) => (props.isDarkMode ? '#ffffff50' : '#00000050')};
+  background-color: ${(props) =>
+    props.isDarkMode ? '#ffffff15' : '#00000015'};
 `;
 
 const MainCardText = styled(Text)`
@@ -105,8 +102,8 @@ const MainCardText = styled(Text)`
   font-weight: 600;
 `;
 
-const ChangeText = styled(Text)`
-  color: ${props => props.color};
+const ChangeText = styled(Text)<{color: string}>`
+  color: ${(props) => props.color};
   margin-top: -15px;
   margin-bottom: 0;
   font-size: 32px;

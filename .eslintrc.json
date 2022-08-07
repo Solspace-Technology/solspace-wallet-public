@@ -1,6 +1,17 @@
 {
   "root": true,
-  "extends": "@react-native-community",
+  "plugins": ["@typescript-eslint", "unused-imports", "react", "react-hooks"],
+  "extends": [
+    "@react-native-community",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
   "globals": {
     "styled": "readonly",
     "React": "readonly"
@@ -28,7 +39,9 @@
       "files": "*",
       "rules": {
         "@next/next/no-img-element": "off",
-        "quotes": ["warn", "single", "avoid-escape"]
+        "quotes": ["warn", "single", "avoid-escape"],
+        "react-native/no-inline-styles": "off",
+        "react/no-unescaped-entities": ["warn", {"forbid": [">", "}"]}]
       }
     }
   ]

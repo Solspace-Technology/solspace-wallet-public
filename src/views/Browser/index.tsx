@@ -1,25 +1,24 @@
 import React from 'react';
+import {Alert, Pressable} from 'react-native';
 import styled from 'styled-components';
-import {Alert} from 'react-native';
 
 import {Button, Icon, Input, Layout, Text} from '@ui-kitten/components';
-import {ScreenBase} from '../../components/Common';
 import {WebView} from 'react-native-webview';
+import {ScreenBase} from '../../components/Common';
 
-import {useWallet} from '../../providers/wallet-context';
-import {useAppState} from '../../providers/appState-context';
 import {clusterApiUrl, Connection} from '@solana/web3.js';
 import {SolspaceWalletProvider} from '../../modules/walletAdapter';
-
-import {Pressable} from 'react-native';
+import {useAppState} from '../../providers/appState-context';
+import {useWallet} from '../../providers/wallet-context';
 
 function useForceUpdate() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [value, setValue] = React.useState(0); // integer state
-  return () => setValue(value => value + 1); // update the state to force render
+  return () => setValue((newValue) => newValue + 1); // update the state to force render
 }
 
 export const BrowserView = () => {
-  const {state: walletState, dispatch} = useWallet();
+  const {state: walletState} = useWallet();
   const {state: appState} = useAppState();
 
   const forceUpdate = useForceUpdate();
@@ -66,21 +65,23 @@ export const BrowserView = () => {
       {
         text: 'Proceed',
         onPress: onSuccess,
-        style: 'OK',
+        style: 'default',
       },
     ]);
   }
 
   function returnDataToWebview(message, data) {
-    webviewRef.current.postMessage(JSON.stringify({message, data}));
+    if (webviewRef && webviewRef.current) {
+      webviewRef.current.postMessage(JSON.stringify({message, data}));
+    }
   }
 
   async function commHandler(payload: any) {
-    let parsed = JSON.parse(payload);
+    const parsed = JSON.parse(payload);
     switch (parsed.message) {
       case 'connect': {
         console.log(parsed.payload);
-        let connectResult = await SolspaceWallet.connect();
+        const connectResult = await SolspaceWallet.connect();
         returnDataToWebview('connect', {...connectResult});
         //* This is disabled as the app is only able to view public key from this action
         // promptUserForTX({
@@ -95,7 +96,7 @@ export const BrowserView = () => {
         break;
       }
       case 'disconnect': {
-        let disconnectResult = await SolspaceWallet.disconnect();
+        const disconnectResult = await SolspaceWallet.disconnect();
         returnDataToWebview('disconnect', {...disconnectResult});
         break;
       }
@@ -107,7 +108,7 @@ export const BrowserView = () => {
           title: parsed.payload.info.title,
           action: 'signTransaction',
           onSuccess: async () => {
-            let signedTxData = await SolspaceWallet.signTransactionWeb(
+            const signedTxData = await SolspaceWallet.signTransactionWeb(
               parsed.payload.transaction,
             );
             returnDataToWebview('signTransaction', signedTxData);
@@ -123,7 +124,7 @@ export const BrowserView = () => {
           title: parsed.payload.info.title,
           action: 'signAllTransactions',
           onSuccess: async () => {
-            let signedTxData = await SolspaceWallet.signAllTransactionsWeb(
+            const signedTxData = await SolspaceWallet.signAllTransactionsWeb(
               parsed.payload.transactions,
             );
             returnDataToWebview('signAllTransactions', signedTxData);
@@ -217,13 +218,13 @@ export const BrowserView = () => {
   true;
   `;
 
-  const renderClearIcon = props => (
+  const renderClearIcon = (props) => (
     <Pressable onPress={() => setAddressBarContent('https://')}>
       <Icon {...props} name="close-circle-outline" status="basic" />
     </Pressable>
   );
 
-  const webviewRef = React.useRef();
+  const webviewRef = React.useRef<WebView>();
 
   return (
     //TODO: re render the page after a wallet change
@@ -253,12 +254,12 @@ export const BrowserView = () => {
         </Layout>
         <Layout style={{flexDirection: 'row', width: '100%'}}>
           <Input
-            enableReturnKeyAutomatically
+            enablesReturnKeyAutomatically
             returnKeyType="go"
             onSubmitEditing={() => setUri(addressBarContent)}
             autoCorrect={false}
-            autoComplete={false}
-            autoCapitalize={false}
+            autoComplete={'off'}
+            autoCapitalize={'none'}
             size="large"
             value={addressBarContent}
             onChangeText={(text: string) => setAddressBarContent(text)}
@@ -283,7 +284,7 @@ export const BrowserView = () => {
           injectedJavaScriptBeforeContentLoaded={activeWallet && runFirst}
           onMessage={(event: any) => commHandler(event.nativeEvent.data)}
           allowsBackForwardNavigationGestures={true}
-          onNavigationStateChange={navigationState => {
+          onNavigationStateChange={(navigationState) => {
             setAddressBarContent(navigationState.url);
           }}
           pullToRefreshEnabled={true}
