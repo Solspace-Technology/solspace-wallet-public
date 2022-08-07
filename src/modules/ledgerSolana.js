@@ -1,15 +1,15 @@
 /* eslint-disable no-bitwise */
-import {Buffer} from 'buffer';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
-import bs58 from 'bs58';
 import {
-  Connection,
   clusterApiUrl,
+  Connection,
   PublicKey,
+  sendAndConfirmRawTransaction,
   SystemProgram,
   Transaction,
-  sendAndConfirmRawTransaction,
 } from '@solana/web3.js';
+import bs58 from 'bs58';
+import {Buffer} from 'buffer';
 
 import {Token, TOKEN_PROGRAM_ID} from '@solana/spl-token';
 import base58 from 'bs58';
@@ -57,9 +57,17 @@ async function solana_send(transport, instruction, p1, payload) {
     }
   }
   const buf = payload.slice(payload_offset);
-  console.log('send', p2.toString(16), buf.length.toString(16), buf);
-  const reply = await transport.send(LEDGER_CLA, instruction, p1, p2, buf);
-  return reply.slice(0, reply.length - 2);
+  try {
+    const reply = await transport.send(LEDGER_CLA, instruction, p1, p2, buf);
+    return reply.slice(0, reply.length - 2);
+  } catch (e) {
+    if (e.message.includes('UNKNOWN_ERROR (0x6808)')) {
+      //TODO: HAndle these errors more gracefully here...
+      console.warn('ENABLE BLIND SIGN');
+    } else {
+      console.warn(e);
+    }
+  }
 }
 
 const BIP32_HARDENED_BIT = (1 << 31) >>> 0;
@@ -94,7 +102,7 @@ function solana_derivation_path(account, change) {
 }
 
 function derivation_path_from_string(string) {
-  let inputs = [...string.match(/\d+/gm)];
+  const inputs = [...string.match(/\d+/gm)];
   if (inputs[2]) {
     if (inputs[3]) {
       return solana_derivation_path(
@@ -139,16 +147,12 @@ async function solana_ledger_sign_message({
   encodedMessage, // base58 encoded message
   derivation_path,
 }) {
-  console.log('derivation_path', derivation_path);
   const msg_bytes = base58.decode(encodedMessage);
-  console.log('msg_bytes', msg_bytes);
 
   var num_paths = Buffer.alloc(1);
   num_paths.writeUint8(1);
 
   const payload = Buffer.concat([num_paths, derivation_path, msg_bytes]);
-
-  console.log('payload', payload);
 
   return solana_send(transport, INS_SIGN_MESSAGE, P1_CONFIRM, payload);
 }
@@ -172,7 +176,7 @@ async function process_solana_transactions_ledger({
       );
     }
 
-    const transport = await TransportBLE.open(deviceId).catch(e => {
+    const transport = await TransportBLE.open(deviceId).catch((e) => {
       console.log('Ledger Comm Error', e);
       error = {
         name: 'LedgerCommErr',
@@ -188,7 +192,7 @@ async function process_solana_transactions_ledger({
     const from_pubkey_bytes = await solana_ledger_get_pubkey(
       transport,
       from_derivation_path,
-    ).catch(e => {
+    ).catch((e) => {
       console.log(e);
       error = {
         name: 'PubkeyErr',
@@ -200,7 +204,7 @@ async function process_solana_transactions_ledger({
 
     // Retrieve recent Blockhash to sign transactions
     const recentBlockhash = (
-      await connection.getRecentBlockhash().catch(e => {
+      await connection.getRecentBlockhash().catch((e) => {
         console.log(e);
         error = {
           name: 'BlockHashErr',
@@ -215,7 +219,7 @@ async function process_solana_transactions_ledger({
 
     // console.log(from_pubkey);
 
-    const tx = new Transaction()
+    const tx = new Transaction();
     tx.feePayer = from_pubkey;
     tx.recentBlockhash = recentBlockhash;
     tx.add(...transactions);
@@ -224,7 +228,7 @@ async function process_solana_transactions_ledger({
       transport,
       from_derivation_path,
       tx,
-    ).catch(e => {
+    ).catch((e) => {
       console.log(e);
       error = {
         name: 'LedgerNoSignErr',
@@ -235,11 +239,11 @@ async function process_solana_transactions_ledger({
 
     tx.addSignature(from_pubkey, sig_bytes);
 
-    let signature = await sendAndConfirmRawTransaction(
+    const signature = await sendAndConfirmRawTransaction(
       connection,
       tx.serialize(),
       confirmOptions,
-    ).catch(e => {
+    ).catch((e) => {
       console.log(e);
       error = {
         name: 'TransactionErr',
@@ -309,11 +313,11 @@ export async function sendSPLTokenUsingLedger({
 
   let error;
   try {
-    let connection = new Connection(clusterApiUrl(network), confirmation);
+    const connection = new Connection(clusterApiUrl(network), confirmation);
 
-    let from_pubkey = new PublicKey(fromPubKeyString);
-    let to_pubkey = new PublicKey(toPublicKey);
-    let mint_public_key = new PublicKey(mint);
+    const from_pubkey = new PublicKey(fromPubKeyString);
+    const to_pubkey = new PublicKey(toPublicKey);
+    const mint_public_key = new PublicKey(mint);
 
     const mint_token = new Token(
       connection,
@@ -324,7 +328,7 @@ export async function sendSPLTokenUsingLedger({
 
     const from_token_account = await mint_token
       .getOrCreateAssociatedAccountInfo(from_pubkey)
-      .catch(e => {
+      .catch((e) => {
         console.log(e);
         error = {
           name: 'TokenAcctErr',
@@ -338,7 +342,7 @@ export async function sendSPLTokenUsingLedger({
       mint_token.programId,
       mint_public_key,
       to_pubkey,
-    ).catch(e => {
+    ).catch((e) => {
       console.log(e);
       error = {
         name: 'TokenAcctErr',
@@ -349,7 +353,7 @@ export async function sendSPLTokenUsingLedger({
 
     const to_token_account = await connection
       .getAccountInfo(to_token_address)
-      .catch(e => {
+      .catch((e) => {
         console.log(e);
         error = {
           name: 'TokenAcctErr',
@@ -431,7 +435,7 @@ export async function signTransactionUsingLedger({
   let error = null;
 
   try {
-    const transport = await TransportBLE.open(deviceId).catch(e => {
+    const transport = await TransportBLE.open(deviceId).catch((e) => {
       console.log('Ledger Comm Error', e);
       error = {
         name: 'LedgerCommErr',
@@ -444,7 +448,7 @@ export async function signTransactionUsingLedger({
       transport,
       derivation_path_from_string(fromDerivationPathString),
       transaction,
-    ).catch(e => {
+    ).catch((e) => {
       console.log(e);
       error = {
         name: 'LedgerNoSignErr',
@@ -472,7 +476,7 @@ export async function signMessageUsingLedger({
   console.log('encodedMessage', encodedMessage);
 
   try {
-    const transport = await TransportBLE.open(deviceId).catch(e => {
+    const transport = await TransportBLE.open(deviceId).catch((e) => {
       console.log('Ledger Comm Error', e);
       error = {
         name: 'LedgerCommErr',
@@ -485,7 +489,7 @@ export async function signMessageUsingLedger({
       transport,
       derivation_path: derivation_path_from_string(fromDerivationPathString),
       encodedMessage,
-    }).catch(e => {
+    }).catch((e) => {
       console.log(e);
       error = {
         name: 'LedgerNoSignErr',
