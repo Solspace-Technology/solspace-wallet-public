@@ -11,6 +11,7 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		416076A11A75170A07148359 /* libPods-SolspaceWallet-SolspaceWalletTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D6A1BCA6CA614FCCCEABEB80 /* libPods-SolspaceWallet-SolspaceWalletTests.a */; };
 		6443D2E6275EDD5300407FE0 /* BridgingFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6443D2E5275EDD5300407FE0 /* BridgingFile.swift */; };
 		6475592E27B1505A00D677D9 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6475592D27B1505A00D677D9 /* BootSplash.storyboard */; };
 		648C90E327AA3B1D005FADF5 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 648C90E227AA3B1D005FADF5 /* BootSplash.storyboard */; };
@@ -41,9 +42,12 @@
 		6443D2E5275EDD5300407FE0 /* BridgingFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgingFile.swift; sourceTree = "<group>"; };
 		6475592D27B1505A00D677D9 /* BootSplash.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = BootSplash.storyboard; path = SolspaceWallet/BootSplash.storyboard; sourceTree = "<group>"; };
 		648C90E227AA3B1D005FADF5 /* BootSplash.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = BootSplash.storyboard; path = SolspaceWallet/BootSplash.storyboard; sourceTree = "<group>"; };
+		6CC56CF05EDC3EF2245FFF5F /* Pods-SolspaceWallet-SolspaceWalletTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SolspaceWallet-SolspaceWalletTests.debug.xcconfig"; path = "Target Support Files/Pods-SolspaceWallet-SolspaceWalletTests/Pods-SolspaceWallet-SolspaceWalletTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9E50711B38268185DF60D4F9 /* Pods-SolspaceWallet.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SolspaceWallet.debug.xcconfig"; path = "Target Support Files/Pods-SolspaceWallet/Pods-SolspaceWallet.debug.xcconfig"; sourceTree = "<group>"; };
+		AE8CF9C700442376A5D3ACBE /* Pods-SolspaceWallet-SolspaceWalletTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SolspaceWallet-SolspaceWalletTests.release.xcconfig"; path = "Target Support Files/Pods-SolspaceWallet-SolspaceWalletTests/Pods-SolspaceWallet-SolspaceWalletTests.release.xcconfig"; sourceTree = "<group>"; };
 		B94E492E4B5AF5E6045281E8 /* Pods-SolspaceWallet.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SolspaceWallet.release.xcconfig"; path = "Target Support Files/Pods-SolspaceWallet/Pods-SolspaceWallet.release.xcconfig"; sourceTree = "<group>"; };
 		BB0E2F0F88C7492D7A8D13FA /* libPods-SolspaceWallet.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SolspaceWallet.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D6A1BCA6CA614FCCCEABEB80 /* libPods-SolspaceWallet-SolspaceWalletTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SolspaceWallet-SolspaceWalletTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				416076A11A75170A07148359 /* libPods-SolspaceWallet-SolspaceWalletTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,6 +108,7 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				BB0E2F0F88C7492D7A8D13FA /* libPods-SolspaceWallet.a */,
+				D6A1BCA6CA614FCCCEABEB80 /* libPods-SolspaceWallet-SolspaceWalletTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -160,6 +166,8 @@
 			children = (
 				9E50711B38268185DF60D4F9 /* Pods-SolspaceWallet.debug.xcconfig */,
 				B94E492E4B5AF5E6045281E8 /* Pods-SolspaceWallet.release.xcconfig */,
+				6CC56CF05EDC3EF2245FFF5F /* Pods-SolspaceWallet-SolspaceWalletTests.debug.xcconfig */,
+				AE8CF9C700442376A5D3ACBE /* Pods-SolspaceWallet-SolspaceWalletTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -171,9 +179,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "SolspaceWalletTests" */;
 			buildPhases = (
+				F4CFB17FE07CBB8107EA800E /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
+				49575986CB20E187C4CB65D6 /* [CP] Embed Pods Frameworks */,
+				196CF5AF36FE5ED7AA8B8CD0 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -278,6 +289,23 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nexport NODE_BINARY=/Users/billyjacoby/.nvm/versions/node/v16.13.1/bin/node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
+		196CF5AF36FE5ED7AA8B8CD0 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SolspaceWallet-SolspaceWalletTests/Pods-SolspaceWallet-SolspaceWalletTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SolspaceWallet-SolspaceWalletTests/Pods-SolspaceWallet-SolspaceWalletTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SolspaceWallet-SolspaceWalletTests/Pods-SolspaceWallet-SolspaceWalletTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		436E9266DB20036DAA5C3814 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -298,6 +326,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		49575986CB20E187C4CB65D6 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SolspaceWallet-SolspaceWalletTests/Pods-SolspaceWallet-SolspaceWalletTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SolspaceWallet-SolspaceWalletTests/Pods-SolspaceWallet-SolspaceWalletTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SolspaceWallet-SolspaceWalletTests/Pods-SolspaceWallet-SolspaceWalletTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		7E3D59D9A5098539A520F9C1 /* [CP] Embed Pods Frameworks */ = {
@@ -332,6 +377,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SolspaceWallet/Pods-SolspaceWallet-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F4CFB17FE07CBB8107EA800E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SolspaceWallet-SolspaceWalletTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -387,6 +454,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6CC56CF05EDC3EF2245FFF5F /* Pods-SolspaceWallet-SolspaceWalletTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -415,6 +483,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AE8CF9C700442376A5D3ACBE /* Pods-SolspaceWallet-SolspaceWalletTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
