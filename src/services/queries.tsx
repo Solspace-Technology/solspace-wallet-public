@@ -1,31 +1,21 @@
-import {Buffer} from 'buffer';
-import axios from 'axios';
 import {
-  PublicKey,
-  LAMPORTS_PER_SOL,
-  Connection,
+  Cluster,
   clusterApiUrl,
+  Connection,
+  LAMPORTS_PER_SOL,
+  PublicKey,
 } from '@solana/web3.js';
+import axios from 'axios';
+import {Buffer} from 'buffer';
 
 import {TokenListProvider} from '@solana/spl-token-registry';
 
 //! THIS IS PINNED AT 4.7.0, have to figure out how to upgrade
 import {programs} from '@metaplex/js/';
 
-import {metadata} from '@metaplex/js/lib/utils';
 const {
   metadata: {MetadataData},
 } = programs;
-
-function allSettled(promises) {
-  return Promise.all(
-    promises.map(promise =>
-      promise
-        .then(value => ({status: 'fulfilled', value}))
-        .catch(reason => ({status: 'rejected', reason})),
-    ),
-  );
-}
 
 function getSolanaInfo(
   solanaBalance,
@@ -83,9 +73,9 @@ async function fetchMetadataAccountForNFT(nftMintKey) {
 }
 
 export async function getTokenInfoFromMint(mint) {
-  let tokenList = await new TokenListProvider().resolve();
+  const tokenList = await new TokenListProvider().resolve();
 
-  let tokens = tokenList.tokenList.filter(token => token.address === mint);
+  const tokens = tokenList.getList().filter((token) => token.address === mint);
   return tokens[0];
 }
 
@@ -93,15 +83,15 @@ export async function getAllTokenAccountBalances(
   pubKeyString,
   {network = 'devnet', showZeroBalances = false, showUnnamedTokens = false},
 ) {
-  let publicKey = new PublicKey(pubKeyString);
-  const connection = new Connection(clusterApiUrl(network));
-  let allTokens = (
+  const publicKey = new PublicKey(pubKeyString);
+  const connection = new Connection(clusterApiUrl(network as Cluster));
+  const allTokens = (
     await connection.getParsedTokenAccountsByOwner(publicKey, {
       programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
     })
   ).value;
 
-  let allTokensWithKey = allTokens.map(item => {
+  const allTokensWithKey = allTokens.map((item) => {
     return {...item, mintKey: item?.account?.data?.parsed?.info?.mint};
   });
 
@@ -151,15 +141,15 @@ export async function getAllTokenAccountBalances(
     },
   );
 
-  let solanaBalance = await connection.getBalance(publicKey);
-  let solanaTokenInfo = getSolanaInfo(solanaBalance);
+  const solanaBalance = await connection.getBalance(publicKey);
+  const solanaTokenInfo = getSolanaInfo(solanaBalance);
 
-  let SPLTokens = [];
+  const SPLTokens = [];
 
   const tokenInfoReqs = [];
   const NFTAccountReqs = [];
 
-  for (let [index, token] of tokens.entries()) {
+  for (const [index, token] of tokens.entries()) {
     // Coin gecko only allows 50 requests per minute, so this is to avoid 429 errors
     if (index < 48) {
       try {
@@ -178,13 +168,13 @@ export async function getAllTokenAccountBalances(
   }
 
   // Is error handling necessary here?
-  let tokenInfoArray = await Promise.all(tokenInfoReqs);
-  let NFTAccountArray = await Promise.all(NFTAccountReqs);
+  const tokenInfoArray = await Promise.all(tokenInfoReqs);
+  const NFTAccountArray = await Promise.all(NFTAccountReqs);
 
-  let NFTAccounts = [];
-  let NFTs = [];
+  const NFTAccounts = [];
+  const NFTs = [];
 
-  for (let [index, item] of tokenInfoArray.entries()) {
+  for (const [index, item] of tokenInfoArray.entries()) {
     if (item) {
       SPLTokens.push({
         ...tokens[index],
@@ -196,14 +186,14 @@ export async function getAllTokenAccountBalances(
     }
   }
 
-  let NFTAcInfo = await connection.getMultipleAccountsInfo(
+  const NFTAcInfo = await connection.getMultipleAccountsInfo(
     NFTAccounts,
     'processed',
   );
 
   NFTAcInfo?.map((info, index) => {
     if (info?.data) {
-      let metaData = MetadataData.deserialize(info?.data);
+      const metaData = MetadataData.deserialize(info?.data);
       NFTs[index] = {...NFTs[index], metaData};
     } else {
       if (showUnnamedTokens) {
@@ -213,11 +203,11 @@ export async function getAllTokenAccountBalances(
   });
 
   SPLTokens.unshift(solanaTokenInfo);
-  let coingeckoIds = SPLTokens.map(
-    item => item?.tokenInfo?.extensions?.coingeckoId,
+  const coingeckoIds = SPLTokens.map(
+    (item) => item?.tokenInfo?.extensions?.coingeckoId,
   );
-  let reqIds = coingeckoIds.join(',');
-  let shallowPriceInfo = await axios.get(
+  const reqIds = coingeckoIds.join(',');
+  const shallowPriceInfo = await axios.get(
     `https://api.coingecko.com/api/v3/simple/price?ids=${reqIds}}&vs_currencies=usd&include_24hr_change=true`,
   );
 
@@ -237,7 +227,7 @@ export async function getAllTokenAccountBalances(
     },
   );
 
-  let totalTokenValueUSD = SPLTokens.reduce((acc, curr, index) => {
+  const totalTokenValueUSD = SPLTokens.reduce((acc, curr) => {
     if (curr?.shallowPriceInfo) {
       acc +=
         curr.shallowPriceInfo.usd *
@@ -246,16 +236,16 @@ export async function getAllTokenAccountBalances(
     return acc;
   }, 0);
 
-  let filteredNFTs = NFTs.filter(item => !!item?.metaData);
+  const filteredNFTs = NFTs.filter((item) => !!item?.metaData);
 
   return {SPLTokens, NFTs: filteredNFTs, totalTokenValueUSD};
 }
 
 export async function getAllSPLTokenPriceInfo(SPLTokens) {
   // Only get tokens that will be displayed (unnamed & zero balances...)
-  let coinGeckoReqs = [];
-  for (let [index, token] of SPLTokens.entries()) {
-    let coinId = token?.tokenInfo?.extensions?.coingeckoId;
+  const coinGeckoReqs = [];
+  for (const token of SPLTokens) {
+    const coinId = token?.tokenInfo?.extensions?.coingeckoId;
     if (coinId) {
       coinGeckoReqs.push(
         axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}`),
@@ -264,13 +254,13 @@ export async function getAllSPLTokenPriceInfo(SPLTokens) {
       coinGeckoReqs.push(null);
     }
   }
-  let priceInfo = await Promise.all(coinGeckoReqs);
+  const priceInfo = await Promise.all(coinGeckoReqs);
 
-  let SPLTokenPrices = priceInfo.map((item, index) => {
+  const SPLTokenPrices = priceInfo.map((item) => {
     return item?.data || null;
   });
 
-  let totalTokenValueUSD = SPLTokenPrices.reduce((acc, curr, index) => {
+  const totalTokenValueUSD = SPLTokenPrices.reduce((acc, curr, index) => {
     if (curr) {
       acc +=
         curr.market_data.current_price.usd *
@@ -287,21 +277,22 @@ export async function getSpecificTokenBalances(
   pubKeyString,
   mintKeyArray,
   SPLTokens,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   {network = 'devnet', showZeroBalances = false, showUnnamedTokens = false},
 ) {
-  let publicKey = new PublicKey(pubKeyString);
-  const connection = new Connection(clusterApiUrl(network));
-  let allTokens = (
+  const publicKey = new PublicKey(pubKeyString);
+  const connection = new Connection(clusterApiUrl(network as Cluster));
+  const allTokens = (
     await connection.getParsedTokenAccountsByOwner(publicKey, {
       programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
     })
   ).value;
 
-  let desiredTokens = [];
-  let solanaBalance = await connection.getBalance(publicKey);
+  const desiredTokens = [];
+  const solanaBalance = await connection.getBalance(publicKey);
   let solanaTokenInfo;
 
-  mintKeyArray.forEach(mintKey => {
+  mintKeyArray.forEach((mintKey) => {
     // Have to check for solana token here...
     if (
       mintKey === 'So11111111111111111111111111111111111111112' ||
@@ -313,15 +304,15 @@ export async function getSpecificTokenBalances(
     } else {
       desiredTokens.push(
         allTokens.find(
-          item => item?.account?.data?.parsed?.info?.mint === mintKey,
+          (item) => item?.account?.data?.parsed?.info?.mint === mintKey,
         ),
       );
     }
   });
 
-  let tokenInfoReqs = [];
+  const tokenInfoReqs = [];
 
-  for (let [index, token] of desiredTokens.entries()) {
+  for (const [index] of desiredTokens.entries()) {
     try {
       tokenInfoReqs.push(getTokenInfoFromMint(mintKeyArray[index]));
     } catch (error) {
@@ -329,9 +320,9 @@ export async function getSpecificTokenBalances(
     }
   }
 
-  let tokenInfo = await Promise.all(tokenInfoReqs);
+  const tokenInfo = await Promise.all(tokenInfoReqs);
 
-  let newTokenInfo = desiredTokens.map((item, index) => {
+  const newTokenInfo = desiredTokens.map((item, index) => {
     if (
       mintKeyArray[index] === 'So11111111111111111111111111111111111111112' ||
       mintKeyArray[index] === '11111111111111111111111111111111'
@@ -353,8 +344,10 @@ export async function getSpecificTokenBalances(
   console.log('newTokenInfo', newTokenInfo);
 
   //TODO: make sure this works?
-  newTokenInfo.forEach(token => {
-    let SPLIndex = SPLTokens.findIndex(item => item.mintKey === token.mintKey);
+  newTokenInfo.forEach((token) => {
+    const SPLIndex = SPLTokens.findIndex(
+      (item) => item.mintKey === token.mintKey,
+    );
     if (SPLIndex >= 0) {
       SPLTokens[SPLIndex] = {
         // test: 'UPDATED FROM SPECIFIC FUNCTION',
