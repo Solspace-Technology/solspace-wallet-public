@@ -1,35 +1,37 @@
+import {Button, Input, Text} from '@ui-kitten/components';
 import {ScreenBase} from '../../../components/Common';
-import {Text, Button, Input} from '@ui-kitten/components';
 
 import {ThemeVariables} from '../../../styles/themeVariables';
 
-import {getMnemonicPhrase} from '../../../modules/walletGeneration';
 import {encryptData} from '../../../modules/security';
+import {getMnemonicPhrase} from '../../../modules/walletGeneration';
 
 // Sub Screens
 import {useAppState} from '../../../providers/appState-context';
 
-import {SelectPubkeySubScreen} from './SelectPubkey';
+import React from 'react';
+import styled from 'styled-components/native';
 import {SaveWalletSubScreen} from './SaveWalletSubScreen';
+import {SelectPubkeySubScreen} from './SelectPubkey';
 
 const {colors} = ThemeVariables();
 
 export function CreateNewWalletScreen() {
   const {state: appState, dispatch: appDispatch} = useAppState();
 
-  const [phrase, setPhrase] = React.useState();
-  const [keypair, setKeypair] = React.useState();
+  const [phrase, setPhrase] = React.useState<string | undefined>();
+  const [keypair, setKeypair] = React.useState<any>();
 
   const hasSeedPhrase = !!appState.encryptedSeedPhrase;
 
   async function generateMnemonic() {
-    let result = await getMnemonicPhrase();
+    const result = await getMnemonicPhrase();
     setPhrase(result);
   }
 
   async function onSavePress() {
     if (phrase) {
-      let encrypted = await encryptData(phrase);
+      const encrypted = await encryptData(phrase);
       appDispatch({type: 'UPDATE_SEED_PHRASE', payload: encrypted});
       console.log('Encrypted seed phrase saved to App State');
     } else {
@@ -58,7 +60,6 @@ export function CreateNewWalletScreen() {
       {/* // TODO: create my own component that does this a little better */}
       <WalletPhraseBox
         multiline={true}
-        // eslint-disable-next-line react-native/no-inline-styles
         textStyle={{
           minHeight: 128,
           color: colors.font,
@@ -79,7 +80,7 @@ export function CreateNewWalletScreen() {
   );
 }
 
-export const Container = props => (
+export const Container = (props) => (
   <StyledContainer {...props}>{props.children}</StyledContainer>
 );
 

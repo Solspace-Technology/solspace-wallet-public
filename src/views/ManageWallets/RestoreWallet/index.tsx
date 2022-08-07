@@ -1,17 +1,19 @@
+import {Button, Input, Text} from '@ui-kitten/components';
 import {Container} from '../CreateNewWallet';
-import {Text, Button, Input} from '@ui-kitten/components';
 
+import {Keypair} from '@solana/web3.js';
+import React from 'react';
+import styled from 'styled-components/native';
 import {getKeypairFromSecretKey} from '../../../modules/walletGeneration';
-import {AddWalletScreen} from '../AddWalletScreen';
 import {SaveWalletSubScreen} from '../CreateNewWallet/SaveWalletSubScreen';
 
 export function RestoreWalletScreen() {
-  const [secretKey, setSecretKey] = React.useState();
-  const [error, setError] = React.useState();
-  const [keypair, setKeypair] = React.useState();
+  const [secretKey, setSecretKey] = React.useState<string | undefined>();
+  const [error, setError] = React.useState<any>();
+  const [keypair, setKeypair] = React.useState<Keypair | undefined>();
 
   function onVerifyClick() {
-    let newKeypair = getKeypairFromSecretKey(secretKey);
+    const newKeypair = getKeypairFromSecretKey(secretKey);
     if (newKeypair) {
       setKeypair(newKeypair);
     } else {
@@ -37,7 +39,7 @@ export function RestoreWalletScreen() {
         status={error ? 'danger' : 'primary'}
         size="large"
         value={secretKey}
-        onChangeText={value => setSecretKey(value)}
+        onChangeText={(value) => setSecretKey(value)}
       />
       {error && (
         <StyledText category="c1" status="danger">

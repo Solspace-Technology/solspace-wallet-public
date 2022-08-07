@@ -1,7 +1,7 @@
-import * as ed25519 from 'ed25519-hd-key';
-import * as bip39 from 'bip39';
 import {Keypair} from '@solana/web3.js';
+import * as bip39 from 'bip39';
 import bs58 from 'bs58';
+import * as ed25519 from 'ed25519-hd-key';
 
 export function getMnemonicPhrase() {
   //* Generates a new 256 bit mnemonic phrase - 24 words
@@ -18,7 +18,7 @@ export async function getKeypairForMnemonicAndDerivePath(
   const seed = await bip39.mnemonicToSeed(mnemonic);
 
   const derivedSeed = ed25519.derivePath(derivePath, seed.toString('hex')).key;
-  let keypair = Keypair.fromSeed(derivedSeed);
+  const keypair = Keypair.fromSeed(derivedSeed);
 
   return keypair;
 }
@@ -29,9 +29,9 @@ export async function getListOfKeypairsFromMnemonic(
   numKeypairs = 3,
   lastDerivePath = 0,
 ) {
-  let keypairs = [];
+  const keypairs = [];
 
-  for (let num of Array(numKeypairs).keys()) {
+  for (const num of Array(numKeypairs).keys()) {
     let derivePath;
     if (num === 0) {
       derivePath = baseDerivePath;
@@ -42,15 +42,15 @@ export async function getListOfKeypairsFromMnemonic(
     keypairs.push(getKeypairForMnemonicAndDerivePath(mnemonic, derivePath));
   }
 
-  let newKeypairs = await Promise.all(keypairs);
+  const newKeypairs = await Promise.all(keypairs);
 
   return newKeypairs;
 }
 
 export function getKeypairFromSecretKey(secretKey) {
-  let decodedKey = bs58.decode(secretKey);
+  const decodedKey = bs58.decode(secretKey);
   try {
-    let keypair = Keypair.fromSecretKey(decodedKey);
+    const keypair = Keypair.fromSecretKey(decodedKey);
     return keypair;
   } catch (error) {
     console.log(error);

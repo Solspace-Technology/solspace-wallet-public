@@ -1,21 +1,23 @@
+import {Button, Spinner, Text} from '@ui-kitten/components';
 import {Container} from '.';
-import {Text, Button, Spinner} from '@ui-kitten/components';
 
-import {useAppState} from '../../../providers/appState-context';
 import {decryptData} from '../../../modules/security';
+import {useAppState} from '../../../providers/appState-context';
 
-import {getListOfKeypairsFromMnemonic} from '../../../modules/walletGeneration';
+import React from 'react';
 import {ScrollView} from 'react-native';
+import styled from 'styled-components/native';
+import {getListOfKeypairsFromMnemonic} from '../../../modules/walletGeneration';
 
 export function SelectPubkeySubScreen(props) {
   const {state: appState} = useAppState();
 
   const [keypairs, setKeypairs] = React.useState([]);
-  const [seedPhrase, setSeedPhrase] = React.useState();
+  const [seedPhrase, setSeedPhrase] = React.useState<string | undefined>();
   const [isLoading, setIsLoading] = React.useState(true);
 
   async function getSeedPhrase() {
-    let newSeedPhrase = await decryptData(appState.encryptedSeedPhrase);
+    const newSeedPhrase = await decryptData(appState.encryptedSeedPhrase);
     setSeedPhrase(newSeedPhrase);
   }
 
@@ -23,7 +25,7 @@ export function SelectPubkeySubScreen(props) {
     // TODO: need to filter out keypairs that are already in walletState.wallets
     // TODO: Also add a way to add more keypairs here if necessary i suppose?
 
-    let newKeypairs = await getListOfKeypairsFromMnemonic(seedPhrase);
+    const newKeypairs = await getListOfKeypairsFromMnemonic(seedPhrase);
     setIsLoading(false);
 
     setKeypairs(newKeypairs);
@@ -44,7 +46,7 @@ export function SelectPubkeySubScreen(props) {
       </Text>
       {isLoading && <Spinner size="giant" style={{alignSelf: 'center'}} />}
       <ScrollView>
-        {keypairs.map(keypair => (
+        {keypairs.map((keypair) => (
           <PubKeyButton
             key={keypair.publicKey.toString()}
             size="large"

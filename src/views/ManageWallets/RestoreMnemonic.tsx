@@ -80,85 +80,82 @@ export function RestoreMnemonicScreen() {
     );
   }
 
-  if (appState.encryptedSeedPhrase) {
-    return (
-      <>
-        <Container noPadding>
-          <KeyboardAvoidingView behavior="padding">
-            <ScrollView contentContainerStyle={{paddingBottom: 200}}>
-              {error && (
-                <Text category="h6" style={{color: 'red', alignSelf: 'center'}}>
-                  {error as string}
+  return (
+    <>
+      <Container noPadding>
+        <KeyboardAvoidingView behavior="padding">
+          <ScrollView contentContainerStyle={{paddingBottom: 200}}>
+            {error && (
+              <Text category="h6" style={{color: 'red', alignSelf: 'center'}}>
+                {error as string}
+              </Text>
+            )}
+            <StyledText category="h5">
+              Use an existing mnemonic phrase with this application.
+            </StyledText>
+            {phrasesMatch || !appState.encryptedSeedPhrase ? (
+              <>
+                <Text
+                  category={'h6'}
+                  style={{alignSelf: 'center', color: 'lime'}}>
+                  Phrases match!{' '}
                 </Text>
-              )}
-              <StyledText category="h5">
-                Use an existing mnemonic phrase with this application.
-              </StyledText>
-              {phrasesMatch ? (
-                <>
-                  <Text
-                    category={'h6'}
-                    style={{alignSelf: 'center', color: 'lime'}}>
-                    Phrases match!{' '}
-                  </Text>
-                  <StyledText>
-                    Please enter the mnemonic phrase that you would like to use
-                    below:
-                  </StyledText>
-                  <Input
-                    inputAccessoryViewID="hide-keyboard"
-                    multiline={true}
-                    status={error ? 'danger' : 'primary'}
-                    size="large"
-                    value={newMnemonic}
-                    onChangeText={(value) => setNewMnemonic(value)}
-                  />
-                  <StyledButton size="giant" onPress={onSaveClick}>
-                    Save Phrase
-                  </StyledButton>
-                </>
-              ) : (
-                <>
-                  <StyledText category="p1">
-                    Please enter your current mnemonic phrase in order to
-                    proceed:
-                  </StyledText>
+                <StyledText>
+                  Please enter the mnemonic phrase that you would like to use
+                  below:
+                </StyledText>
+                <Input
+                  inputAccessoryViewID="hide-keyboard"
+                  multiline={true}
+                  status={error ? 'danger' : 'primary'}
+                  size="large"
+                  value={newMnemonic}
+                  onChangeText={(value) => setNewMnemonic(value)}
+                />
+                <StyledButton size="giant" onPress={onSaveClick}>
+                  Save Phrase
+                </StyledButton>
+              </>
+            ) : (
+              <>
+                <StyledText category="p1">
+                  Please enter your current mnemonic phrase in order to proceed:
+                </StyledText>
 
-                  <Input
-                    inputAccessoryViewID="hide-keyboard"
-                    multiline={true}
-                    status={error ? 'danger' : 'primary'}
-                    size="large"
-                    value={mnemonic}
-                    onChangeText={(value) => setMnemonic(value)}
-                  />
-                  <StyledText category="p1">
-                    If you already created a mnemonic in Soladex Wallet
-                    importing a different phrase will overwrite it. You will
-                    still be able to use any existing wallets and export those
-                    secret keys, but that phrase will no longer be available.
-                  </StyledText>
-                  <StyledButton size="giant" onPress={onVerifyClick}>
-                    Verify Phrase
-                  </StyledButton>
-                </>
-              )}
-            </ScrollView>
-          </KeyboardAvoidingView>
-        </Container>
-        <InputAccessoryView nativeID={'hide-keyboard'}>
-          <Button
-            onPress={() => Keyboard.dismiss()}
-            status={'basic'}
-            style={{
-              width: 100,
-            }}>
-            <Text>Done</Text>
-          </Button>
-        </InputAccessoryView>
-      </>
-    );
-  }
+                <Input
+                  inputAccessoryViewID="hide-keyboard"
+                  multiline={true}
+                  status={error ? 'danger' : 'primary'}
+                  size="large"
+                  value={mnemonic}
+                  onChangeText={(value) => setMnemonic(value)}
+                />
+                <StyledText category="p1">
+                  If you already created a mnemonic in Soladex Wallet importing
+                  a different phrase will overwrite it. You will still be able
+                  to use any existing wallets and export those secret keys, but
+                  that phrase will no longer be available.
+                </StyledText>
+                <StyledButton size="giant" onPress={onVerifyClick}>
+                  Verify Phrase
+                </StyledButton>
+              </>
+            )}
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </Container>
+      <InputAccessoryView nativeID={'hide-keyboard'}>
+        <Button
+          onPress={() => Keyboard.dismiss()}
+          status={'basic'}
+          style={{
+            width: 100,
+          }}>
+          <Text>Done</Text>
+        </Button>
+      </InputAccessoryView>
+    </>
+  );
 }
 
 const StyledText = styled(Text)`

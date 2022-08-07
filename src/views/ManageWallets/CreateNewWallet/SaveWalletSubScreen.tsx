@@ -1,12 +1,13 @@
-/* eslint-disable react-native/no-inline-styles */
-import {Container} from './index';
-import {Text, Input, CheckBox, Button} from '@ui-kitten/components';
-import {encryptData} from '../../../modules/security';
+import {useNavigation} from '@react-navigation/native';
+import {Button, CheckBox, Input, Text} from '@ui-kitten/components';
+import bs58 from 'bs58';
 import 'react-native-get-random-values';
 import {v4 as uuid} from 'uuid';
-import bs58 from 'bs58';
-import {useNavigation} from '@react-navigation/native';
+import {encryptData} from '../../../modules/security';
+import {Container} from './index';
 
+import React from 'react';
+import styled from 'styled-components/native';
 import {useWallet} from '../../../providers/wallet-context';
 
 export function SaveWalletSubScreen(props) {
@@ -14,18 +15,18 @@ export function SaveWalletSubScreen(props) {
 
   const navigation = useNavigation();
 
-  const {state: walletState, dispatch: walletDispatch} = useWallet();
+  const {dispatch: walletDispatch} = useWallet();
 
-  const [walletName, setWalletName] = React.useState();
+  const [walletName, setWalletName] = React.useState<string | undefined>();
   const [shouldSetActiveWallet, setShouldSetActiveWallet] =
     React.useState(true);
 
   async function saveNewWallet() {
-    let privateKey = bs58.encode(keypair.secretKey);
-    let encryptedPrivateKey = await encryptData(privateKey);
+    const privateKey = bs58.encode(keypair.secretKey);
+    const encryptedPrivateKey = await encryptData(privateKey);
 
-    let walletId = uuid();
-    let newWallet = {
+    const walletId = uuid();
+    const newWallet = {
       id: walletId,
       active: false,
       type: 'keypair',
@@ -40,7 +41,7 @@ export function SaveWalletSubScreen(props) {
     if (shouldSetActiveWallet) {
       walletDispatch({type: 'SET_ACTIVE_WALLET', payload: walletId});
     }
-    navigation.navigate('Main');
+    navigation.navigate('Main' as never);
   }
 
   return (
@@ -51,11 +52,11 @@ export function SaveWalletSubScreen(props) {
       <Input
         placeholder="Wallet Nickname"
         value={walletName}
-        onChangeText={value => setWalletName(value)}
+        onChangeText={(value) => setWalletName(value)}
         status="info"
         size="large"
         style={{marginBottom: 15}}
-        label={things => (
+        label={(things) => (
           <StyledText {...things}>
             Create a nickname for this wallet:
           </StyledText>
@@ -63,7 +64,7 @@ export function SaveWalletSubScreen(props) {
       />
       <CheckBox
         checked={shouldSetActiveWallet}
-        onChange={nextChecked => setShouldSetActiveWallet(nextChecked)}
+        onChange={(nextChecked) => setShouldSetActiveWallet(nextChecked)}
         status="info">
         Set As Active Wallet?
       </CheckBox>

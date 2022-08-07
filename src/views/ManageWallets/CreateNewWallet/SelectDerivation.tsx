@@ -1,5 +1,5 @@
-import {Container} from './index';
 import {Text} from '@ui-kitten/components';
+import {Container} from './index';
 
 export function SelectDerivationSubScreen() {
   return (
