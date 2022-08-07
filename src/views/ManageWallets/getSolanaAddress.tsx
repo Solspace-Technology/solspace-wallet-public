@@ -1,7 +1,7 @@
-import {Text, Button, Layout} from '@ui-kitten/components';
+import {Button, Layout, Text} from '@ui-kitten/components';
 
-import {ScreenBase} from '../../components/Common';
 import {Alert} from 'react-native';
+import {ScreenBase} from '../../components/Common';
 
 import {useWallet} from '../../providers/wallet-context';
 import {ThemeVariables} from '../../styles/themeVariables';
@@ -9,6 +9,7 @@ import {ThemeVariables} from '../../styles/themeVariables';
 import {decryptData} from '../../modules/security';
 
 import Clipboard from '@react-native-clipboard/clipboard';
+import styled from 'styled-components/native';
 
 export function EditWalletScreen({route, navigation}) {
   const wallet = route.params;
@@ -37,7 +38,7 @@ export function EditWalletScreen({route, navigation}) {
   }
 
   async function showSecretKey() {
-    let decryptedSecretKey = await decryptData(wallet.secretKey);
+    const decryptedSecretKey = await decryptData(wallet.secretKey);
     Alert.alert('Secret Key', `${decryptedSecretKey}`, [
       {
         text: 'Copy Key',
@@ -74,7 +75,7 @@ export function EditWalletScreen({route, navigation}) {
             </StyledButton>
           )}
           <StyledButton size="giant" status="danger" onPress={deleteWallet}>
-            {evaProps => (
+            {(evaProps) => (
               <Text {...evaProps} style={{color: 'black', fontWeight: '800'}}>
                 Remove Wallet
               </Text>
@@ -96,9 +97,9 @@ const WalletCard = styled(Layout)`
   padding: 10px;
 `;
 
-const StyledText = styled(Text)`
+const StyledText = styled(Text)<{margin?: string}>`
   margin-bottom: 20px;
-  ${props => props.margin && 'margin: ' + props.margin};'};
+  ${(props) => props.margin && 'margin: ' + props.margin};
 `;
 
 const Container = styled(ScreenBase)`

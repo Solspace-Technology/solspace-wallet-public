@@ -1,18 +1,18 @@
-import {Layout, Button, Icon, Text, Tooltip, Card} from '@ui-kitten/components';
+import {Button, Card, Icon, Layout, Text, Tooltip} from '@ui-kitten/components';
 import {
+  Image,
+  SafeAreaView,
   StatusBar,
   TouchableOpacity,
   View,
-  Image,
-  SafeAreaView,
 } from 'react-native';
 
-import {useGetCurrentColorScheme} from '../hooks/useGetCurrentColorScheme';
-import {ThemeVariables} from '../styles/themeVariables';
 import Clipboard from '@react-native-clipboard/clipboard';
-import {isFunctionComponent, shortenPubKey} from '../modules/utils';
-import styled from 'styled-components/native';
 import React, {PropsWithChildren} from 'react';
+import styled from 'styled-components/native';
+import {useGetCurrentColorScheme} from '../hooks/useGetCurrentColorScheme';
+import {isFunctionComponent, shortenPubKey} from '../modules/utils';
+import {ThemeVariables} from '../styles/themeVariables';
 const {colors} = ThemeVariables();
 
 export const ColorCard = styled(Card)<{color?: string}>`

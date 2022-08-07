@@ -19,6 +19,7 @@ import {toastConfig} from './components/Toast';
 import {getStoredData} from './modules/utils';
 
 // Views
+import React from 'react';
 import {RootView} from './views/RootView';
 
 function App() {

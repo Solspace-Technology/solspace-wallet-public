@@ -1,35 +1,26 @@
-import {SafeAreaView, View, Image} from 'react-native';
 import {
+  Button,
   Drawer,
   DrawerItem,
-  Button,
-  Layout,
   Icon,
+  Layout,
   Text,
 } from '@ui-kitten/components';
+import {Image, SafeAreaView, View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {ThemeVariables} from '../styles/themeVariables';
 
-import {useWallet} from '../providers/wallet-context';
-import {useTokensState} from '../providers/tokens-context';
-import {shortenPubKey} from '../modules/utils';
-import React, {Ref} from 'react';
+import React from 'react';
 import styled from 'styled-components/native';
+import {shortenPubKey} from '../modules/utils';
+import {useTokensState} from '../providers/tokens-context';
+import {useWallet} from '../providers/wallet-context';
 
-const FooterRendered = (navigation: any) => (
-  <Footer size="giant" onPress={() => navigation.navigate('Manage Wallets')}>
-    Manage Wallets
-  </Footer>
-);
-
-interface DrawerContainerProps {
-  navigation: any;
-}
-export function DrawerContainer({navigation}: DrawerContainerProps) {
+export function DrawerContainer({navigation}) {
   const {state: walletState, dispatch: walletDispatch} = useWallet();
   const {dispatch: tokenDispatch} = useTokensState();
 
-  function setWallet(wallet: any) {
+  function setWallet(wallet) {
     walletDispatch({
       type: 'SET_ACTIVE_WALLET',
       payload: wallet.id,
@@ -37,16 +28,21 @@ export function DrawerContainer({navigation}: DrawerContainerProps) {
     tokenDispatch({type: 'CLEAR_STATE'});
     navigation.closeDrawer();
   }
-
   return (
     <Layout style={{flex: 1}}>
       <SafeAreaView style={{flex: 1}}>
         <Drawer
           appearance={'default'}
-          footer={<FooterRendered navigation={navigation} />}
+          footer={() => (
+            <Footer
+              size="giant"
+              onPress={() => navigation.navigate('Manage Wallets')}>
+              Manage Wallets
+            </Footer>
+          )}
           header={Header}>
           <ScrollView style={{minHeight: 500}}>
-            {walletState?.wallets?.map((wallet: any) => (
+            {walletState?.wallets?.map((wallet) => (
               <DrawerItem
                 key={wallet.pubKeyString}
                 title={(evaProps) => (
@@ -70,8 +66,8 @@ export function DrawerContainer({navigation}: DrawerContainerProps) {
 
 const {colors} = ThemeVariables();
 
-function WalletItem({wallet}: {wallet: any}) {
-  const iconRef = React.useRef<any>();
+function WalletItem({wallet}) {
+  const iconRef = React.useRef<Icon<Animatable>>();
 
   let walletDisplayName = wallet.name;
 
@@ -80,7 +76,7 @@ function WalletItem({wallet}: {wallet: any}) {
   }
 
   React.useEffect(() => {
-    if (iconRef && iconRef.current && iconRef.current.startAnimation) {
+    if (iconRef?.current?.startAnimation) {
       iconRef.current.startAnimation();
     }
   }, []);
@@ -100,16 +96,12 @@ function WalletItem({wallet}: {wallet: any}) {
   );
 }
 
-const ActiveIndicator = ({iconRef}: {iconRef: Ref<any>}) => (
+const ActiveIndicator = ({iconRef}) => (
   <View style={{flexDirection: 'row', alignItems: 'center'}}>
     <Text category="s2">Active</Text>
     <Icon
       name="star"
-      animationConfig={{
-        cycles: 'infinity' as never,
-        duration: 1000,
-        useNativeDriver: true,
-      }}
+      animationConfig={{cycles: Infinity, useNativeDriver: true}}
       animation="pulse"
       width={15}
       height={15}

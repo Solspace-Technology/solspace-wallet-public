@@ -2,31 +2,31 @@ import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 
 import {
   Button,
-  IndexPath,
+  CheckBox,
+  Input,
   Layout,
   List,
-  Text,
-  Input,
-  CheckBox,
   Spinner,
+  Text,
 } from '@ui-kitten/components';
 
 import {ErrorMessage} from '../../components/Common';
 
 import {useNavigation} from '@react-navigation/core';
 
-import {useGetBTState} from '../../modules/ledger';
-import {useWallet} from '../../providers/wallet-context';
 import Solana from '@ledgerhq/hw-app-solana';
 import {PublicKey} from '@solana/web3.js';
+import {useGetBTState} from '../../modules/ledger';
+import {useWallet} from '../../providers/wallet-context';
 
-import 'react-native-get-random-values';
-import {v4 as uuid} from 'uuid';
+import React from 'react';
 import {View} from 'react-native';
-import {ThemeVariables} from '../../styles/themeVariables';
+import 'react-native-get-random-values';
+import styled from 'styled-components/native';
+import {v4 as uuid} from 'uuid';
 
 export function ConnectLedgerScreen() {
-  const {state: walletState, dispatch} = useWallet();
+  const {dispatch} = useWallet();
   // console.log(walletState);
 
   const {isBTAvail, BTError} = useGetBTState();
@@ -43,14 +43,16 @@ export function ConnectLedgerScreen() {
     "44'/501'/0'/0'",
     "44'/501'/0'/1'",
   ];
-  const [derivationPath, setDerivationPath] = React.useState();
+  const [derivationPath, setDerivationPath] = React.useState<
+    string | undefined
+  >();
 
-  const [transport, setTransport] = React.useState(null);
+  const [transport, setTransport] = React.useState<null>(null);
 
-  const [solanaAddress, setSolanaAddress] = React.useState(null);
-  const [newWalletState, setNewWalletState] = React.useState(null);
+  const [solanaAddress, setSolanaAddress] = React.useState<string | null>(null);
+  const [newWalletState, setNewWalletState] = React.useState<any | null>(null);
 
-  const [walletName, setWalletName] = React.useState();
+  const [walletName, setWalletName] = React.useState<string | undefined>();
   const [shouldSetActiveWallet, setShouldSetActiveWallet] =
     React.useState(true);
 
@@ -70,24 +72,24 @@ export function ConnectLedgerScreen() {
   React.useEffect(() => {
     if (!newWalletState?.device) {
       TransportBLE.listen({
-        complete: e => {
+        complete: (e) => {
           console.log('complete', e);
           setError(null);
           setRefreshing(false);
         },
-        next: e => {
+        next: (e) => {
           if (e.type === 'add') {
             const device = e.descriptor;
-            let newItems = deviceList.filter(item => item.id !== device.id);
+            const newItems = deviceList.filter((item) => item.id !== device.id);
             if (deviceList.length === 0) {
               setDeviceList([device]);
             }
             if (newItems) {
-              setDeviceList(prevState => [...prevState, ...newItems]);
+              setDeviceList((prevState) => [...prevState, ...newItems]);
             }
           }
         },
-        error: e => {
+        error: (e) => {
           console.log('Error scanning for devices.', e);
           setRefreshing(false);
           setError({name: 'Scanning Devices Error', error: e});
@@ -135,7 +137,7 @@ export function ConnectLedgerScreen() {
   }
 
   if (isBTAvail && !newWalletState?.device && deviceList.length > 0) {
-    const renderDevice = ({item, index}) => (
+    const renderDevice = ({item}) => (
       <View style={{flex: 1}}>
         <StyledHeader category="h5">
           Select your device to continue:{' '}
@@ -145,7 +147,7 @@ export function ConnectLedgerScreen() {
           status="basic"
           size="giant"
           onPress={() =>
-            setNewWalletState(prevState => ({...prevState, device: item}))
+            setNewWalletState((prevState) => ({...prevState, device: item}))
           }>
           {item?.name}
         </StyledButton>
@@ -170,7 +172,7 @@ export function ConnectLedgerScreen() {
             the first option.
           </StyledMainText>
           <Layout style={{flex: 5, width: '100%', alignItems: 'center'}}>
-            {DERIVATION_PATHS.map(path => (
+            {DERIVATION_PATHS.map((path) => (
               <StyledButton
                 key={path}
                 appearance="outline"
@@ -185,36 +187,36 @@ export function ConnectLedgerScreen() {
       </>
     );
   }
+  async function getSolanaAddress() {
+    try {
+      updateTransport();
+      const solana = new Solana(transport);
+      const r = await solana.getAddress(derivationPath);
+      const solPubKey = new PublicKey(r.address).toString();
+      console.log(solPubKey);
+      setSolanaAddress(solPubKey);
+      const walletToAdd = {
+        type: 'ledger',
+        // name: 'ADD NAME FIELD',
+        pubKeyString: solPubKey,
+        device: newWalletState?.device,
+        privateKey: undefined,
+      };
+      setNewWalletState(walletToAdd);
+      // dispatch({type: 'SET_ACTIVE_WALLET', payload: newActiveWallet});
+      setError(null);
+    } catch (e) {
+      console.log('error: ', e);
+      setError({
+        name: 'Error getting Solana PubKey',
+        message:
+          'Make sure the Solana app is open, then wait a few seconds and try again.',
+        error: e,
+      });
+    }
+  }
 
   if (derivationPath && !newWalletState?.pubKeyString) {
-    async function getSolanaAddress() {
-      try {
-        updateTransport();
-        const solana = new Solana(transport);
-        const r = await solana.getAddress(derivationPath);
-        const solPubKey = new PublicKey(r.address).toString();
-        console.log(solPubKey);
-        setSolanaAddress(solPubKey);
-        const walletToAdd = {
-          type: 'ledger',
-          // name: 'ADD NAME FIELD',
-          pubKeyString: solPubKey,
-          device: newWalletState?.device,
-          privateKey: undefined,
-        };
-        setNewWalletState(walletToAdd);
-        // dispatch({type: 'SET_ACTIVE_WALLET', payload: newActiveWallet});
-        setError(null);
-      } catch (e) {
-        console.log('error: ', e);
-        setError({
-          name: 'Error getting Solana PubKey',
-          message:
-            'Make sure the Solana app is open, then wait a few seconds and try again.',
-          error: e,
-        });
-      }
-    }
     return (
       <Container>
         <StyledHeader category="h6">Retrieve Solana Account Info</StyledHeader>
@@ -251,7 +253,7 @@ export function ConnectLedgerScreen() {
         payload: newWallet.id,
       });
     }
-    navigation.navigate('Main');
+    navigation.navigate('Main' as never);
   }
 
   return (
@@ -263,17 +265,17 @@ export function ConnectLedgerScreen() {
       <Input
         placeholder="Wallet Nickname"
         value={walletName}
-        onChangeText={value => setWalletName(value)}
+        onChangeText={(value) => setWalletName(value)}
         status="info"
         size="large"
         style={{marginBottom: 15}}
-        label={props => (
+        label={(props) => (
           <Text {...props}>Create a nickname for this wallet:</Text>
         )}
       />
       <CheckBox
         checked={shouldSetActiveWallet}
-        onChange={nextChecked => setShouldSetActiveWallet(nextChecked)}
+        onChange={(nextChecked) => setShouldSetActiveWallet(nextChecked)}
         status="info">
         Set As Active Wallet?
       </CheckBox>
@@ -288,8 +290,6 @@ export function ConnectLedgerScreen() {
     </Container>
   );
 }
-
-const {colors} = ThemeVariables();
 
 const StyledHeader = styled(Text)`
   padding-top: 10px;

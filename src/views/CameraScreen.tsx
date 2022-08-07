@@ -1,28 +1,31 @@
 import {Alert, View} from 'react-native';
 
+import Clipboard from '@react-native-clipboard/clipboard';
 import {
   Camera,
   useCameraDevices,
   useFrameProcessor,
 } from 'react-native-vision-camera';
-import 'react-native-reanimated';
 import {scanQRCodes} from 'vision-camera-qrcode-scanner';
-import Clipboard from '@react-native-clipboard/clipboard';
 
-import {Text, Layout} from '@ui-kitten/components';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {Layout, Text} from '@ui-kitten/components';
 import {runOnJS} from 'react-native-reanimated';
-import {useNavigation} from '@react-navigation/native';
 import styled from 'styled-components';
 
+import React from 'react';
 import {ThemeVariables} from '../styles/themeVariables';
 
 const {colors} = ThemeVariables();
 
 export function CameraScreen() {
   const navigation = useNavigation();
-  const [cameraPermission, setCameraPermissions] = React.useState();
-  const [cameraRequestResult, setCameraRequestResult] = React.useState();
+  const [cameraPermission, setCameraPermissions] = React.useState<
+    string | undefined
+  >();
+  // const [cameraRequestResult, setCameraRequestResult] = React.useState<
+  //   string | undefined
+  // >();
   const [codeBoxColor, setCodeBoxColor] = React.useState('white');
 
   const [qrCodes, setQrCodes] = React.useState([]);
@@ -39,32 +42,32 @@ export function CameraScreen() {
     setCameraPermissions(newCameraPermissions);
   }
   async function requestCameraPermission() {
-    let result = Camera.requestCameraPermission();
-    // console.log(result);
-    setCameraRequestResult(result);
+    const result = await Camera.requestCameraPermission();
+    console.log('result', result);
+    // setCameraRequestResult(result);
   }
 
-  const QRFrameProcessor = useFrameProcessor(frame => {
+  const QRFrameProcessor = useFrameProcessor((frame) => {
     'worklet';
     const qrCode = scanQRCodes(frame);
     runOnJS(setQrCodes)(qrCode);
-  });
+  }, []);
 
   function parseSolanaPay(code) {
-    let solanaRegex = /^(?=.*solana:([^?]+)|)/;
-    let solana = code.match(solanaRegex)[1];
+    const solanaRegex = /^(?=.*solana:([^?]+)|)/;
+    const solana = code.match(solanaRegex)[1];
 
-    let amountRegex = /(?=.*amount=([^&]+)|)/;
-    let amount = code.match(amountRegex)[1];
+    const amountRegex = /(?=.*amount=([^&]+)|)/;
+    const amount = code.match(amountRegex)[1];
 
-    let splTokenRegex = /(?=.*spl-token=([^&]+)|)/;
-    let splToken = code.match(splTokenRegex)[1];
+    const splTokenRegex = /(?=.*spl-token=([^&]+)|)/;
+    const splToken = code.match(splTokenRegex)[1];
 
-    let referenceRegex = /(?=.*reference=([^&]+)|)/;
-    let reference = code.match(referenceRegex)[1];
+    const referenceRegex = /(?=.*reference=([^&]+)|)/;
+    const reference = code.match(referenceRegex)[1];
 
-    let labelRegex = /(?=.*label=([^&]+)|)/;
-    let label = code.match(labelRegex)[1];
+    const labelRegex = /(?=.*label=([^&]+)|)/;
+    const label = code.match(labelRegex)[1];
     console.log(solana);
 
     return {
@@ -89,8 +92,8 @@ export function CameraScreen() {
     }
     if (qrCodes.length > 0) {
       setCodeBoxColor('green');
-      let code = qrCodes[0]?.displayValue;
-      let transactionData = parseSolanaPay(code);
+      const code = qrCodes[0]?.displayValue;
+      const transactionData = parseSolanaPay(code);
       // Solana Pay Code here
       if (
         transactionData.solana &&
@@ -114,9 +117,12 @@ export function CameraScreen() {
               onPress: () => {
                 setCodeBoxColor('white');
 
-                navigation.navigate('Send Tokens', {
-                  transactionData,
-                });
+                navigation.navigate(
+                  'Send Tokens' as never,
+                  {
+                    transactionData,
+                  } as never,
+                );
               },
             },
           ],
@@ -190,7 +196,7 @@ export function CameraScreen() {
   );
 }
 
-const CameraTextContainer = styled.View`
+const CameraTextContainer = styled(View)`
   margin: 10px;
   padding: 10px;
   background-color: black;
@@ -201,14 +207,14 @@ const CameraText = styled(Text)`
   text-align: center;
 `;
 
-const CameraOverlay = styled.View`
+const CameraOverlay = styled(View)`
   position: absolute;
   top: 10px;
   left: 50px;
 `;
 
-const CodeSquare = styled.View`
-  border: solid 10px ${props => props.color};
+const CodeSquare = styled(View)<{color: string}>`
+  border: solid 10px ${(props) => props.color};
   border-radius: 50px;
   height: 300px;
   width: 300px;

@@ -1,19 +1,21 @@
+import {Button, Input, Text} from '@ui-kitten/components';
 import {Container} from './CreateNewWallet';
-import {Text, Button, Input} from '@ui-kitten/components';
 
-import {getKeypairForMnemonicAndDerivePath} from '../../modules/walletGeneration';
-import {useAppState} from '../../providers/appState-context';
 import {
+  Alert,
+  InputAccessoryView,
   Keyboard,
   KeyboardAvoidingView,
-  InputAccessoryView,
-  Alert,
 } from 'react-native';
+import {getKeypairForMnemonicAndDerivePath} from '../../modules/walletGeneration';
+import {useAppState} from '../../providers/appState-context';
 
 import {ScrollView} from 'react-native-gesture-handler';
 import {decryptData, encryptData} from '../../modules/security';
 
 import {useNavigation} from '@react-navigation/native';
+import React from 'react';
+import styled from 'styled-components/native';
 
 export function RestoreMnemonicScreen() {
   const {state: appState, dispatch: dispatchAppState} = useAppState();
@@ -24,23 +26,23 @@ export function RestoreMnemonicScreen() {
 
   const [phrasesMatch, setPhrasesMatch] = React.useState(false);
 
-  const [error, setError] = React.useState();
+  const [error, setError] = React.useState<boolean | string>(false);
 
   async function onVerifyClick() {
     setError(false);
-    let currentMnemonic = await decryptData(appState.encryptedSeedPhrase);
+    const currentMnemonic = await decryptData(appState.encryptedSeedPhrase);
     console.log(currentMnemonic, mnemonic);
     if (currentMnemonic.toLowerCase() === mnemonic.trim().toLowerCase()) {
       setPhrasesMatch(true);
       console.log(phrasesMatch);
-      setMnemonic();
+      setMnemonic(undefined);
     } else {
       setError('Mnemonic phrases do not match. Please try again.');
     }
   }
 
   async function saveNewPhrase() {
-    let encryptedSeedPhrase = await encryptData(newMnemonic);
+    const encryptedSeedPhrase = await encryptData(newMnemonic);
     dispatchAppState({
       type: 'UPDATE_SEED_PHRASE',
       payload: encryptedSeedPhrase,
@@ -48,12 +50,17 @@ export function RestoreMnemonicScreen() {
     Alert.alert(
       'Success',
       'Your new mnemonic phrase has been saved. You can add associated public keys from the manage wallet screen!',
-      () => navigation.navigate('Add Wallet'),
+      [
+        {
+          text: 'Add Wallet',
+          onPress: () => navigation.navigate('Add Wallet' as never),
+        },
+      ],
     );
   }
 
   async function onSaveClick() {
-    let newKeypair = await getKeypairForMnemonicAndDerivePath(
+    const newKeypair = await getKeypairForMnemonicAndDerivePath(
       newMnemonic.trim().toLowerCase(),
     );
 
@@ -81,7 +88,7 @@ export function RestoreMnemonicScreen() {
             <ScrollView contentContainerStyle={{paddingBottom: 200}}>
               {error && (
                 <Text category="h6" style={{color: 'red', alignSelf: 'center'}}>
-                  {error}
+                  {error as string}
                 </Text>
               )}
               <StyledText category="h5">
@@ -101,11 +108,10 @@ export function RestoreMnemonicScreen() {
                   <Input
                     inputAccessoryViewID="hide-keyboard"
                     multiline={true}
-                    height={64}
                     status={error ? 'danger' : 'primary'}
                     size="large"
                     value={newMnemonic}
-                    onChangeText={value => setNewMnemonic(value)}
+                    onChangeText={(value) => setNewMnemonic(value)}
                   />
                   <StyledButton size="giant" onPress={onSaveClick}>
                     Save Phrase
@@ -121,11 +127,10 @@ export function RestoreMnemonicScreen() {
                   <Input
                     inputAccessoryViewID="hide-keyboard"
                     multiline={true}
-                    height={64}
                     status={error ? 'danger' : 'primary'}
                     size="large"
                     value={mnemonic}
-                    onChangeText={value => setMnemonic(value)}
+                    onChangeText={(value) => setMnemonic(value)}
                   />
                   <StyledText category="p1">
                     If you already created a mnemonic in Soladex Wallet
@@ -144,7 +149,6 @@ export function RestoreMnemonicScreen() {
         <InputAccessoryView nativeID={'hide-keyboard'}>
           <Button
             onPress={() => Keyboard.dismiss()}
-            title="Clear text"
             status={'basic'}
             style={{
               width: 100,

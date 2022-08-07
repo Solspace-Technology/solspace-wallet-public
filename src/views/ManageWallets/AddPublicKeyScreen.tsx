@@ -1,22 +1,32 @@
-import {Layout, Input, CheckBox, Text, Button} from '@ui-kitten/components';
+import {Button, CheckBox, Input, Layout, Text} from '@ui-kitten/components';
 
+import {useNavigation} from '@react-navigation/native';
 import 'react-native-get-random-values';
 import {v4 as uuid} from 'uuid';
-import {useNavigation} from '@react-navigation/native';
 
+import React from 'react';
+import {TextProps} from 'react-native-svg';
+import styled from 'styled-components/native';
 import {useWallet} from '../../providers/wallet-context';
+
+const EnterPubkey = (props: TextProps) => (
+  <Text {...props}>Enter Solana PublicKey:</Text>
+);
+const EnterName = (props: TextProps) => (
+  <Text {...props}>Enter Wallet Nickname:</Text>
+);
 
 export function AddPublicKeyScreen() {
   const {dispatch} = useWallet();
 
   const navigation = useNavigation();
 
-  const [publicKey, setPublicKey] = React.useState();
-  const [walletName, setWalletName] = React.useState();
+  const [publicKey, setPublicKey] = React.useState<string | undefined>();
+  const [walletName, setWalletName] = React.useState<string | undefined>();
   const [shouldBeActiveWallet, setShouldBeActiveWallet] = React.useState(true);
 
   function saveWallet() {
-    let walletId = uuid();
+    const walletId = uuid();
     dispatch({
       type: 'ADD_WALLET',
       payload: {
@@ -32,28 +42,28 @@ export function AddPublicKeyScreen() {
     if (shouldBeActiveWallet) {
       dispatch({type: 'SET_ACTIVE_WALLET', payload: walletId});
     }
-    navigation.navigate('Main');
+    navigation.navigate('Main' as never);
   }
 
   return (
     <Container>
       <Input
         status="primary"
-        label={props => <Text {...props}>Enter Solana PublicKey:</Text>}
+        label={EnterPubkey}
         value={publicKey}
-        onChangeText={value => setPublicKey(value)}
+        onChangeText={(value) => setPublicKey(value)}
         style={{marginBottom: 10}}
       />
       <Input
         status="primary"
-        label={props => <Text {...props}>Enter Wallet Nickname:</Text>}
+        label={EnterName}
         value={walletName}
-        onChangeText={value => setWalletName(value)}
+        onChangeText={(value) => setWalletName(value)}
         style={{marginBottom: 10}}
       />
       <CheckBox
         checked={shouldBeActiveWallet}
-        onChange={value => setShouldBeActiveWallet(value)}>
+        onChange={(value) => setShouldBeActiveWallet(value)}>
         Set as active wallet
       </CheckBox>
       {shouldBeActiveWallet && (

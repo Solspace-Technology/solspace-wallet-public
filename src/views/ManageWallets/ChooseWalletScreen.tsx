@@ -1,7 +1,7 @@
-import {ScreenBase} from '../../components/Common';
+import {useNavigation} from '@react-navigation/native';
 import {Button, Icon, Text} from '@ui-kitten/components';
 import {Pressable, ScrollView, View} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {ScreenBase} from '../../components/Common';
 
 import {useGetCurrentColorScheme} from '../../hooks/useGetCurrentColorScheme';
 
@@ -9,6 +9,8 @@ import {useGetCurrentColorScheme} from '../../hooks/useGetCurrentColorScheme';
 import {useWallet} from '../../providers/wallet-context';
 
 // Modules
+import React from 'react';
+import styled from 'styled-components/native';
 import {shortenPubKey} from '../../modules/utils';
 import {useTokensState} from '../../providers/tokens-context';
 import {ThemeVariables} from '../../styles/themeVariables';
@@ -16,7 +18,7 @@ import {ThemeVariables} from '../../styles/themeVariables';
 export function ChooseWalletScreen() {
   const navigation = useNavigation();
   const isDarkMode = useGetCurrentColorScheme() === 'dark';
-  const iconRef = React.useRef();
+  const iconRef = React.useRef<Icon<Animatable>>();
 
   const {state: walletState, dispatch} = useWallet();
   const {dispatch: tokenDispatch} = useTokensState();
@@ -39,7 +41,7 @@ export function ChooseWalletScreen() {
   ];
 
   return (
-    <ScreenBase noPadding>
+    <ScreenBase>
       {/* //Todo: If no wallets are available, then don't even show this view */}
       <Text style={{alignSelf: 'center', margin: 5}} category="c1">
         (Long press to edit)
@@ -47,7 +49,7 @@ export function ChooseWalletScreen() {
       <View style={{flex: 1}}>
         <ScrollView showsVerticalScrollIndicator={false}>
           {walletState?.wallets &&
-            walletState.wallets.map(wallet => (
+            walletState.wallets.map((wallet) => (
               <StyledWalletItem
                 isDarkMode={isDarkMode}
                 color="info"
@@ -60,7 +62,9 @@ export function ChooseWalletScreen() {
                     navigation.goBack();
                   }
                 }}
-                onLongPress={() => navigation.navigate('Edit Wallet', wallet)}>
+                onLongPress={() =>
+                  navigation.navigate('Edit Wallet' as never, wallet as never)
+                }>
                 <>
                   <Row>
                     <DarkText category="h4" style={{marginBottom: 0}}>
@@ -76,7 +80,10 @@ export function ChooseWalletScreen() {
                         <DarkText category="s1">Active</DarkText>
                         <Icon
                           name="star"
-                          animationConfig={{cycles: 'infinity', duration: 1000}}
+                          animationConfig={{
+                            useNativeDriver: true,
+                            cycles: Infinity,
+                          }}
                           animation="pulse"
                           width={20}
                           height={20}
@@ -88,7 +95,7 @@ export function ChooseWalletScreen() {
                     )}
                   </Row>
                   <DarkText category="c1" style={{marginBottom: 7}}>
-                    {walletTypeLabels.find(item => item.value === wallet.type)
+                    {walletTypeLabels.find((item) => item.value === wallet.type)
                       ?.label || 'Error'}
                   </DarkText>
                   <DarkText category="p1">
@@ -102,7 +109,7 @@ export function ChooseWalletScreen() {
 
       <AddWalletButton
         status="primary"
-        onPress={() => navigation.push('Add Wallet')}
+        onPress={() => navigation.navigate('Add Wallet' as never)}
         size="giant"
         accessoryLeft={
           <Icon name="plus-circle-outline" width={40} height={40} />
@@ -115,13 +122,19 @@ export function ChooseWalletScreen() {
 
 const {colors} = ThemeVariables();
 
-const DarkText = props => <StyledText {...props}>{props.children}</StyledText>;
+const DarkText = (props) => (
+  <StyledText {...props}>{props.children}</StyledText>
+);
 
 const StyledText = styled(Text)`
   color: #fff;
 `;
 
-const StyledWalletItem = styled(Pressable)`
+const StyledWalletItem = styled(Pressable)<{
+  isDarkMode?: boolean;
+  color?: string;
+  active?: boolean;
+}>`
   margin: 5px 10px;
   padding: 7px 15px;
   border-radius: 10px;

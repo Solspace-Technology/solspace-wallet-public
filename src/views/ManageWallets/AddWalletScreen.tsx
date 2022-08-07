@@ -1,26 +1,27 @@
-import {Layout, Button} from '@ui-kitten/components';
+import {Button, Layout} from '@ui-kitten/components';
 
 import {useNavigation} from '@react-navigation/core';
+import styled from 'styled-components/native';
 
 export function AddWalletScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
   return (
     <Container>
       <ButtonContainer>
-        <WalletButton onPress={() => navigation.push('Connect Ledger')}>
+        <WalletButton onPress={() => navigation.navigate('Connect Ledger')}>
           Connect a Ledger
         </WalletButton>
-        <WalletButton onPress={() => navigation.push('Create Wallet')}>
+        <WalletButton onPress={() => navigation.navigate('Create Wallet')}>
           Create wallet (Add from mnemonic)
         </WalletButton>
-        <WalletButton onPress={() => navigation.push('Restore Wallet')}>
+        <WalletButton onPress={() => navigation.navigate('Restore Wallet')}>
           Restore from secret key
         </WalletButton>
-        <WalletButton onPress={() => navigation.push('Restore Mnemonic')}>
+        <WalletButton onPress={() => navigation.navigate('Restore Mnemonic')}>
           Restore a mnemonic phrase
         </WalletButton>
-        <WalletButton onPress={() => navigation.push('Add Public Key')}>
+        <WalletButton onPress={() => navigation.navigate('Add Public Key')}>
           Add a Public Key
         </WalletButton>
       </ButtonContainer>
@@ -38,7 +39,7 @@ const StyledButton = styled(Button)`
   align-self: stretch;
 `;
 
-const WalletButton = props => (
+const WalletButton = (props) => (
   <StyledButton
     {...props}
     size="giant"
