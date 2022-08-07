@@ -43,9 +43,9 @@ PODS:
   - GTMSessionFetcher/Core (1.7.2)
   - hermes-engine (0.69.3)
   - libevent (2.1.12)
-  - LogRocket (1.4.5)
-  - logrocket-react-native (1.4.5):
-    - LogRocket (= 1.4.5)
+  - LogRocket (1.4.6)
+  - logrocket-react-native (1.4.6):
+    - LogRocket (= 1.4.6)
     - React
   - MLImage (1.0.0-beta3)
   - MLKitBarcodeScanning (2.1.0):
@@ -657,8 +657,8 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
   hermes-engine: ff1ba576165861a94a0d101b0a351a8ca2149f36
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  LogRocket: d9df268e8802f4c8d006c5edb1957ac460c1b991
-  logrocket-react-native: 7dcbacd7acda2c869ad3ae54a7c210e7c8db6369
+  LogRocket: fed66d1cbfab9b1cf637c0df27c6a50440fc60ea
+  logrocket-react-native: 1401f0c9baa097c0b36c284eefe96653a59f789d
   MLImage: 489dfec109f21da8621b28d476401aaf7a0d4ff4
   MLKitBarcodeScanning: 74f43c38f3f85b3f3f332006b20a1a22f404256c
   MLKitCommon: 20f4aca0ec2bb37cef2b9c211b50586817bac5d3
