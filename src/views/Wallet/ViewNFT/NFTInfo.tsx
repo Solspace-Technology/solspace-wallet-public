@@ -1,21 +1,23 @@
-import {Dimensions, Image, ScrollView} from 'react-native';
-import {Spinner, Text, Layout, Divider} from '@ui-kitten/components';
+import {Layout, Spinner, Text} from '@ui-kitten/components';
 import axios from 'axios';
+import React from 'react';
+import {Dimensions, Image, ScrollView} from 'react-native';
 import {useQuery} from 'react-query';
+import styled from 'styled-components/native';
 import {useGetCurrentColorScheme} from '../../../hooks/useGetCurrentColorScheme';
 
 export function NFTInfo({uri}) {
-  let isDarkMode = useGetCurrentColorScheme() === 'dark';
+  const isDarkMode = useGetCurrentColorScheme() === 'dark';
 
-  const [NftItemInfo, setNftItemInfo] = React.useState();
-  const [imgHeight, setImgHeight] = React.useState();
+  const [NftItemInfo, setNftItemInfo] = React.useState<any>();
+  const [imgHeight, setImgHeight] = React.useState<number | undefined>();
   const imgWidth = Dimensions.get('window').width * 0.85;
 
   const [imgLoading, setImgLoading] = React.useState(false);
 
   async function getNFTInfo() {
     if (uri) {
-      let result = await axios.get(uri);
+      const result = await axios.get(uri);
       return result.data;
     }
   }
@@ -48,7 +50,6 @@ export function NFTInfo({uri}) {
         <ScrollView showsVerticalScrollIndicator={false}>
           <>
             {imgLoading && (
-              // eslint-disable-next-line react-native/no-inline-styles
               <Layout style={{alignItems: 'center', justifyContent: 'center'}}>
                 <Spinner size="giant" />
               </Layout>
@@ -57,7 +58,6 @@ export function NFTInfo({uri}) {
               onLoadStart={() => setImgLoading(true)}
               onLoadEnd={() => setImgLoading(false)}
               source={{uri: NftItemInfo?.image}}
-              // eslint-disable-next-line react-native/no-inline-styles
               style={{width: imgWidth, height: imgHeight, alignSelf: 'center'}}
             />
             {NftItemInfo.description && (
@@ -99,15 +99,16 @@ export function NFTInfo({uri}) {
   return null;
 }
 
-const AttrRow = styled(Layout)`
+const AttrRow = styled(Layout)<{isDarkMode?: boolean}>`
   min-width: 100%;
   flex-direction: row;
   padding: 15px 10px;
   margin: 2px 0;
   border-radius: 5px;
-  border: solid 1px ${props => (props.isDarkMode ? '#ffffff25' : '#00000025')};
+  border: solid 1px ${(props) => (props.isDarkMode ? '#ffffff25' : '#00000025')};
   justify-content: space-between;
-  background-color: ${props => (props.isDarkMode ? '#ffffff25' : '#00000025')};
+  background-color: ${(props) =>
+    props.isDarkMode ? '#ffffff25' : '#00000025'};
 `;
 
 const ItemContainer = styled(Layout)`

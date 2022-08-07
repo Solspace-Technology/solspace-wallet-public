@@ -1,48 +1,42 @@
-import {Text, Layout, Input, Button} from '@ui-kitten/components';
+import {Button, Input, Layout, Text} from '@ui-kitten/components';
 import {
+  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
+  LayoutAnimation,
   ScrollView,
   View,
-  ActivityIndicator,
-  LayoutAnimation,
 } from 'react-native';
 
 // Components
 import {MainCard} from './ViewTokens';
 
 import {
-  sendSolanaUsingLedger,
-  sendSPLTokenUsingLedger,
-} from '../../modules/ledgerSolana';
-
-import {getKeypairFromEncryptedSecretKey} from '../../modules/security';
-import {
   getSendSolanaTransaction,
-  sendSolanaUsingKeyPair,
   getSendSPLTokenTransaction,
 } from '../../services/transactions';
 
-import {useWallet} from '../../providers/wallet-context';
 import {useAppState} from '../../providers/appState-context';
+import {useWallet} from '../../providers/wallet-context';
 
-import {shortenPubKey, USDFormatter} from '../../modules/utils';
 import {clusterApiUrl, LAMPORTS_PER_SOL, PublicKey} from '@solana/web3.js';
-import {Image} from 'react-native';
-import {useTokensState} from '../../providers/tokens-context';
-import {
-  solDomainToPubkey,
-  twitterHandleToPubkey,
-} from '../../modules/splNameService';
+import {WalletChip} from '../../components/Common';
 import {
   errorToast,
   processingToast,
   successToast,
 } from '../../components/ToastFunctions';
-import {WalletChip} from '../../components/Common';
+import {
+  solDomainToPubkey,
+  twitterHandleToPubkey,
+} from '../../modules/splNameService';
+import {USDFormatter} from '../../modules/utils';
+import {useTokensState} from '../../providers/tokens-context';
 
-import {SolspaceWalletProvider} from '../../modules/walletAdapter';
 import {Connection} from '@metaplex/js';
+import React from 'react';
+import styled from 'styled-components/native';
+import {SolspaceWalletProvider} from '../../modules/walletAdapter';
 
 export function SendTokens({route, navigation}) {
   const {
@@ -58,31 +52,33 @@ export function SendTokens({route, navigation}) {
 
   const transactionData = route.params.transactionData;
 
-  console.log(route.params);
   const [tokenPriceUSD, setTokenPriceUSD] = React.useState(
     tokenPriceUSDFromRoute,
   );
   const [tokenSymbol, setTokenSymbol] = React.useState(tokenSymbolFromRoute);
   const [tokenName, setTokenName] = React.useState(tokenNameFromRoute);
   const [tokenMint, setTokenMint] = React.useState(tokenMintFromRoute);
-  const [tokenDecimals, setTokenDecimals] = React.useState(
-    tokenDecimalsFromRoute,
-  );
+  const tokenDecimals = tokenDecimalsFromRoute;
+  // const [tokenDecimals, setTokenDecimals] = React.useState(
+  //   tokenDecimalsFromRoute,
+  // );
 
   const {state: walletState} = useWallet();
   const {state: tokenState, dispatch: tokenDispatch} = useTokensState();
   const {state: appState} = useAppState();
 
-  const [tokenHoldings, setTokenHoldings] = React.useState();
+  const [tokenHoldings, setTokenHoldings] = React.useState<
+    string | undefined
+  >();
 
   function refreshTokenBalance() {
     let newTokenHoldings = tokenState.SPLTokens.find(
-      item => item.mintKey === tokenMint,
+      (item) => item.mintKey === tokenMint,
     )?.account?.data?.parsed?.info?.tokenAmount?.uiAmount;
 
     if (!newTokenHoldings && tokenName === 'Solana') {
       newTokenHoldings = tokenState.SPLTokens.find(
-        item => item.tokenInfo?.name === 'Solana',
+        (item) => item.tokenInfo?.name === 'Solana',
       )?.account?.data?.parsed?.info?.tokenAmount?.uiAmount;
     }
 
@@ -94,13 +90,15 @@ export function SendTokens({route, navigation}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenState.SPLTokens]);
 
-  let tokenTotalValue = USDFormatter.format(tokenHoldings * tokenPriceUSD);
+  const tokenTotalValue = USDFormatter.format(
+    (parseFloat(tokenHoldings) || 0) * tokenPriceUSD,
+  );
 
   const {activeWallet} = walletState;
   const network = appState.settings.find(({name}) => name === 'network').value;
 
   const [receiverInput, setReceiverInput] = React.useState('');
-  const [toPubKey, setToPubKey] = React.useState();
+  const [toPubKey, setToPubKey] = React.useState<string | undefined>();
   const [isSNSLoading, setIsSNSLoading] = React.useState(false);
 
   const [isSendDisabled, setIsSendDisabled] = React.useState(true);
@@ -109,24 +107,15 @@ export function SendTokens({route, navigation}) {
   const [transactionProcessing, setTransactionProcessing] =
     React.useState(false);
 
-  console.log(tokenState);
-
   React.useEffect(() => {
     // need to get token data here... if no token data throw error
     if (transactionData) {
       ('getting tx data');
-      const {solana, amount, splToken, reference, label, message, memo} =
-        transactionData;
+      const {solana, amount, splToken} = transactionData;
 
-      console.log('solana', solana);
-      console.log('splToken', splToken);
-      console.log('amount', amount);
-
-      let tokenInfo = tokenState.SPLTokens.find(
-        item => item.mintKey === splToken,
+      const tokenInfo = tokenState.SPLTokens.find(
+        (item) => item.mintKey === splToken,
       );
-
-      console.log('tokenInfo', tokenInfo);
       if (tokenInfo) {
         setTokenName(tokenInfo?.tokenInfo?.name);
         setTokenSymbol(tokenInfo?.tokenInfo?.symbol);
@@ -143,7 +132,7 @@ export function SendTokens({route, navigation}) {
   function clearInput() {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setReceiverInput('');
-    setToPubKey();
+    setToPubKey(undefined);
     setTokensToSend('0');
   }
 
@@ -158,7 +147,7 @@ export function SendTokens({route, navigation}) {
     if (receiverInput.startsWith('@')) {
       // set loading
       setIsSNSLoading(true);
-      let publicKey = await twitterHandleToPubkey(receiverInput.substring(1));
+      const publicKey = await twitterHandleToPubkey(receiverInput.substring(1));
       setIsSNSLoading(false);
       console.log(publicKey);
       if (publicKey?.toString()) {
@@ -174,7 +163,7 @@ export function SendTokens({route, navigation}) {
     setReceiverInput(value);
     if (value.endsWith('.sol')) {
       setIsSNSLoading(true);
-      let publicKey = await solDomainToPubkey(value);
+      const publicKey = await solDomainToPubkey(value);
       setIsSNSLoading(false);
       if (publicKey?.toString()) {
         if (!solanaPay) {
@@ -195,7 +184,7 @@ export function SendTokens({route, navigation}) {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       }
       setIsSendDisabled(true);
-      setToPubKey();
+      setToPubKey(undefined);
     }
   }
 
@@ -234,28 +223,28 @@ export function SendTokens({route, navigation}) {
       let e;
       // Perform transaction here!
       setIsProcessing();
-      let connection = new Connection(clusterApiUrl(network));
-      let wallet = new SolspaceWalletProvider({
+      const connection = new Connection(clusterApiUrl(network));
+      const wallet = new SolspaceWalletProvider({
         connection,
         activeWallet,
       });
-      let transaction = getSendSolanaTransaction({
+      const transaction = getSendSolanaTransaction({
         fromPubkey: new PublicKey(activeWallet.pubKeyString),
         toPublicKey: new PublicKey(toPubKey),
-        lamportsToSend: tokensToSend * LAMPORTS_PER_SOL,
+        lamportsToSend: parseFloat(tokensToSend) * LAMPORTS_PER_SOL,
       });
-      let signedTransaction = await wallet.signTransaction(transaction);
-      let txSig = await connection.sendRawTransaction(
+      const signedTransaction = await wallet.signTransaction(transaction);
+      const txSig = await connection.sendRawTransaction(
         signedTransaction.serialize(),
       );
-      let result = await connection.confirmTransaction(txSig);
+      const result = await connection.confirmTransaction(txSig);
       if (result) {
         setSuccessfulSend(txSig, ['11111111111111111111111111111111']);
         // setToPubKey('');
         setTokensToSend('0');
         //TODO: refresh token balances here somehow
       } else {
-        let error = {...result.error} || {
+        const error = {...result} || {
           name: 'Transaction Error',
           message:
             'Transaction could not be processed. There should be more error handling here...',
@@ -278,8 +267,8 @@ export function SendTokens({route, navigation}) {
       let e;
       // Perform transaction here!
       setIsProcessing();
-      let connection = new Connection(clusterApiUrl(network));
-      let transaction = await getSendSPLTokenTransaction({
+      const connection = new Connection(clusterApiUrl(network));
+      const transaction = await getSendSPLTokenTransaction({
         fromPubKey: activeWallet.pubKeyString,
         toPublicKey: toPubKey,
         mint: tokenMint,
@@ -288,17 +277,17 @@ export function SendTokens({route, navigation}) {
         connection,
       });
       // TODO: Abstract this into it's own function somewhere...
-      let wallet = new SolspaceWalletProvider({connection, activeWallet});
-      let signedTX = await wallet.signTransaction(transaction);
-      let TXSig = await connection.sendRawTransaction(signedTX.serialize());
-      let result = await connection.confirmTransaction(TXSig);
+      const wallet = new SolspaceWalletProvider({connection, activeWallet});
+      const signedTX = await wallet.signTransaction(transaction);
+      const TXSig = await connection.sendRawTransaction(signedTX.serialize());
+      const result = await connection.confirmTransaction(TXSig);
       if (result) {
         setSuccessfulSend(TXSig, [tokenMint]);
         // setToPubKey('');
         setTokensToSend('0');
         //TODO: refresh token balances here somehow
       } else {
-        let error = {...result.error} || {
+        const error = {...result} || {
           name: 'Transaction Error',
           message:
             'Transaction could not be processed. There should be more error handling here...',
@@ -318,6 +307,8 @@ export function SendTokens({route, navigation}) {
     );
   }
 
+  const sendButtonText = `Send ${tokenSymbol === 'SOL' ? 'Solana' : 'Tokens'}`;
+
   return (
     <Container>
       <ScrollView>
@@ -328,7 +319,7 @@ export function SendTokens({route, navigation}) {
             </CardRow>
             <CardRow style={{justifyContent: 'center'}}>
               <Text category="s1">
-                {tokenHoldings?.toLocaleString(undefined, {
+                {parseFloat(tokenHoldings).toLocaleString(undefined, {
                   maximumFractionDigits: 5,
                 })}{' '}
                 {tokenSymbol}
@@ -345,19 +336,22 @@ export function SendTokens({route, navigation}) {
                 {tokenPriceUSD && (
                   <Text style={{alignSelf: 'center'}}>
                     (
-                    {(tokenPriceUSD * tokensToSend).toLocaleString(undefined, {
-                      maximumFractionDigits: 2,
-                      style: 'currency',
-                      currency: 'USD',
-                    })}
+                    {(tokenPriceUSD * parseFloat(tokensToSend)).toLocaleString(
+                      undefined,
+                      {
+                        maximumFractionDigits: 2,
+                        style: 'currency',
+                        currency: 'USD',
+                      },
+                    )}
                     )
                   </Text>
                 )}
               </View>
               <SendingText numberOfLines={1} adjustsFontSizeToFit>
-                {isNaN(parseFloat(tokensToSend), 10)
+                {isNaN(parseFloat(tokensToSend))
                   ? '0.0'
-                  : parseFloat(tokensToSend, 10).toLocaleString(undefined, {
+                  : parseFloat(tokensToSend).toLocaleString(undefined, {
                       minimumFractionDigits: 1,
                       maximumFractionDigits: 9,
                     })}
@@ -384,7 +378,7 @@ export function SendTokens({route, navigation}) {
                 size="large"
                 keyboardType="numeric"
                 value={tokensToSend}
-                onChangeText={value => onTokensUpdate(value)}
+                onChangeText={(value) => onTokensUpdate(value)}
                 status="info"
                 style={{marginBottom: 10}}
               />
@@ -395,7 +389,7 @@ export function SendTokens({route, navigation}) {
                 size="large"
                 value={receiverInput}
                 autoCorrect={false}
-                onChangeText={value => updateReceiverInput(value)}
+                onChangeText={(value) => updateReceiverInput(value)}
                 status="info"
                 style={{marginBottom: 10}}
               />
@@ -410,7 +404,7 @@ export function SendTokens({route, navigation}) {
               isSendDisabled || tokensToSend === '0' || transactionProcessing
             }
             onPress={tokenSymbol === 'SOL' ? onSendSolana : onSendSPLToken}>
-            Send {tokenSymbol === 'SOL' ? 'Solana' : 'Tokens'}
+            {sendButtonText}
           </Button>
           <Button
             style={{width: '90%', alignSelf: 'center', marginTop: 10}}

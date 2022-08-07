@@ -1,21 +1,35 @@
 // Navigator
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {
+  createNativeStackNavigator,
+  NativeStackHeaderProps,
+} from '@react-navigation/native-stack';
 
 // Screens
-import {Wallet} from './Wallet';
-import {ViewTokens} from './ViewTokens';
-import {ViewNFT} from './ViewNFT';
-import {SendTokens} from './SendTokens';
 import {ReceiveTokens} from './ReceiveTokens';
+import {SendTokens} from './SendTokens';
+import {ViewNFT} from './ViewNFT';
+import {ViewTokens} from './ViewTokens';
+import {Wallet} from './Wallet';
 
 //Components
 import {StackHeader, StackHeaderWithLogo} from '../../components/Common';
 import {StakingAccountsScreen} from './StakingAccountsScreen';
 
 //! TODO: Figure out how to add swipe down gestures back to token cards
-
-global.Buffer = global.Buffer || require('buffer').Buffer;
 const Stack = createNativeStackNavigator();
+
+const StakingAccountsHeader = (props: NativeStackHeaderProps) => (
+  <StackHeaderWithLogo {...props} title="Staking Accounts" />
+);
+const SendingHeader = (props: NativeStackHeaderProps) => (
+  <StackHeaderWithLogo {...props} title="Sending" />
+);
+const ReceiveTokensHeader = (props: NativeStackHeaderProps) => (
+  <StackHeader title="Receive Tokens" {...props} />
+);
+const NFTDetailHeader = (props: NativeStackHeaderProps) => (
+  <StackHeader title="NFT Detail" {...props} />
+);
 
 export const WalletStack = () => (
   <Stack.Navigator screenOptions={{headerShown: false}}>
@@ -24,29 +38,24 @@ export const WalletStack = () => (
       name="View Tokens"
       component={ViewTokens}
       options={{
-        gestureResponseDistance: 500,
         headerShown: true,
-        header: props => <StackHeaderWithLogo {...props} />,
+        header: StackHeaderWithLogo,
       }}
     />
     <Stack.Screen
       name="Staking Accounts"
       component={StakingAccountsScreen}
       options={{
-        gestureResponseDistance: 500,
         headerShown: true,
-        header: props => (
-          <StackHeaderWithLogo {...props} title="Staking Accounts" />
-        ),
+        header: StakingAccountsHeader,
       }}
     />
     <Stack.Screen
       name="Send Tokens"
       component={SendTokens}
       options={{
-        gestureResponseDistance: 500,
         headerShown: true,
-        header: props => <StackHeaderWithLogo {...props} title="Sending" />,
+        header: SendingHeader,
       }}
     />
     <Stack.Screen
@@ -55,7 +64,7 @@ export const WalletStack = () => (
       options={{
         presentation: 'containedTransparentModal',
         headerShown: true,
-        header: props => <StackHeader title="Receive Tokens" {...props} />,
+        header: ReceiveTokensHeader,
       }}
     />
     <Stack.Screen
@@ -63,7 +72,7 @@ export const WalletStack = () => (
       component={ViewNFT}
       options={{
         headerShown: true,
-        header: props => <StackHeader title="NFT Detail" {...props} />,
+        header: NFTDetailHeader,
         presentation: 'modal',
       }}
     />

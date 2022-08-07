@@ -1,15 +1,16 @@
-import {ScreenBase, WalletChip} from '../../components/Common';
 import {Text} from '@ui-kitten/components';
+import {ScreenBase, WalletChip} from '../../components/Common';
 
+import {Image, View} from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-import {View, Image} from 'react-native';
 
+import styled from 'styled-components/native';
 import {useGetCurrentColorScheme} from '../../hooks/useGetCurrentColorScheme';
 
-export function ReceiveTokens({route, navigation}) {
+export function ReceiveTokens({route}) {
   const isDarkMode = useGetCurrentColorScheme() === 'dark';
   return (
-    <Container noPadding>
+    <Container>
       <View
         style={{
           flexDirection: 'row',

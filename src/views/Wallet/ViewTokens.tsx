@@ -1,28 +1,17 @@
-import {
-  Button,
-  ButtonGroup,
-  Text,
-  Icon,
-  Card,
-  Layout,
-} from '@ui-kitten/components';
+import {Button, Icon, Layout, Text} from '@ui-kitten/components';
 
-import {
-  ScreenBase,
-  ColorCard,
-  WalletChip,
-  LightText,
-} from '../../components/Common';
 import {View} from 'react-native';
+import {ColorCard, ScreenBase, WalletChip} from '../../components/Common';
 
 import {USDFormatter} from '../../modules/utils';
 import {ThemeVariables} from '../../styles/themeVariables';
 
-import {TokenPriceInfo} from '../../components/TokenPriceInfo';
 import {ScrollView} from 'react-native-gesture-handler';
+import styled from 'styled-components/native';
+import {StakeAccountsButton} from '../../components/StakeAccountsButton';
+import {TokenPriceInfo} from '../../components/TokenPriceInfo';
 import {useTokensState} from '../../providers/tokens-context';
 import {useWallet} from '../../providers/wallet-context';
-import {StakeAccountsButton} from '../../components/StakeAccountsButton';
 
 const {colors} = ThemeVariables();
 
@@ -33,30 +22,28 @@ export function ViewTokens({route, navigation}) {
       activeWallet: {type: walletType},
     },
   } = useWallet();
+
+  function onSendPress() {
+    navigation.navigate('Send Tokens', {...route.params});
+  }
+
+  function onReceivePress() {
+    navigation.navigate('Receive Tokens', {...route.params});
+  }
   if (route?.params?.tokenHoldings) {
     const {tokenPriceInfo, tokenPriceUSD, tokenMint, tokenName} = route.params;
 
-    const pubKey = route?.params?.pubKey;
-
     let tokenHoldings = tokenState.SPLTokens.find(
-      item => item.mintKey === tokenMint,
+      (item) => item.mintKey === tokenMint,
     )?.account?.data?.parsed?.info?.tokenAmount?.uiAmount;
 
     if (!tokenHoldings && tokenName === 'Solana') {
       tokenHoldings = tokenState.SPLTokens.find(
-        item => item.tokenInfo?.name === 'Solana',
+        (item) => item.tokenInfo?.name === 'Solana',
       )?.account?.data?.parsed?.info?.tokenAmount?.uiAmount;
     }
 
-    let tokenTotalValue = USDFormatter.format(tokenHoldings * tokenPriceUSD);
-
-    function onSendPress() {
-      navigation.navigate('Send Tokens', {...route.params});
-    }
-
-    function onReceivePress() {
-      navigation.navigate('Receive Tokens', {...route.params});
-    }
+    const tokenTotalValue = USDFormatter.format(tokenHoldings * tokenPriceUSD);
 
     return (
       <Container>
@@ -149,7 +136,7 @@ const ButtonContainer = styled(Layout)`
 `;
 
 const StyledButton = styled(Button)`
-margin-top: 10px
+  margin-top: 10px;
   border-radius: 5px;
   min-width: 150px;
 `;
