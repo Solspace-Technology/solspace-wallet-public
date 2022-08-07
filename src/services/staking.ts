@@ -8,7 +8,7 @@ import {
   StakeProgram,
 } from '@solana/web3.js';
 
-const API_KEY = 'aum49fvUTj9E1iYYUqzQ3QBs';
+const VALIDATORS_API_KEY = process.env.VALIDATORS_APP_API_KEY;
 
 // type GetStakingParams = {
 //   pubkey: string,
@@ -59,7 +59,7 @@ export async function getValidatorDetails(
       `https://www.validators.app/api/v1/validators/${reqNetwork}/${account}.json`,
       {
         headers: {
-          Token: API_KEY,
+          Token: VALIDATORS_API_KEY,
         },
       },
     );
