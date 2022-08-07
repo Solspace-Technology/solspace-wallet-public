@@ -31,7 +31,7 @@ export async function requestAirdrop(
     processingToast();
     const sig = await connection.requestAirdrop(publicKey, transferAmount);
     await connection.confirmTransaction(sig);
-    successToast(sig, network, navigation);
+    successToast(sig, network as Cluster, navigation);
     return {data: sig, error: null};
   } catch (e) {
     console.error(e);
