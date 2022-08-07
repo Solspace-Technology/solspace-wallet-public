@@ -27,6 +27,27 @@ import {USDFormatter, LightenColor} from '../modules/utils';
 import {WalletHeading} from './WalletHeading';
 import styled from 'styled-components/native';
 
+const ListHeader = (
+  horizontalOffset: number,
+  onHeadingPress: (a: string) => void,
+) => (
+  <View>
+    <WalletHeading />
+    <HeadingContainer>
+      <Pressable onPress={() => onHeadingPress('tokens')}>
+        <HeadingText category="h2" active={horizontalOffset <= 0}>
+          Tokens
+        </HeadingText>
+      </Pressable>
+      <Pressable onPress={() => onHeadingPress('nfts')}>
+        <HeadingText category="h2" active={horizontalOffset > 0}>
+          NFTs
+        </HeadingText>
+      </Pressable>
+    </HeadingContainer>
+  </View>
+);
+
 export function TokenList() {
   const {width: PAGE_WIDTH} = useWindowDimensions();
   const isDarkMode = useGetCurrentColorScheme() === 'dark';
@@ -201,24 +222,6 @@ export function TokenList() {
     </NFTItem>
   );
 
-  const ListHeader = () => (
-    <React.Fragment>
-      <WalletHeading />
-      <HeadingContainer>
-        <Pressable onPress={() => onHeadingPress('tokens')}>
-          <HeadingText category="h2" active={horizontalOffset <= 0}>
-            Tokens
-          </HeadingText>
-        </Pressable>
-        <Pressable onPress={() => onHeadingPress('nfts')}>
-          <HeadingText category="h2" active={horizontalOffset > 0}>
-            NFTs
-          </HeadingText>
-        </Pressable>
-      </HeadingContainer>
-    </React.Fragment>
-  );
-
   if (tokenState.SPLTokens?.length > 0) {
     return (
       <View>
@@ -239,13 +242,16 @@ export function TokenList() {
                 width: '100%',
                 maxWidth: 1000,
                 alignSelf: 'center',
+                minHeight: '100%',
               }}
               ListFooterComponent={
                 <Button size="large" appearance="ghost" onPress={refreshTokens}>
                   Refresh
                 </Button>
               }
-              ListHeaderComponent={ListHeader}
+              ListHeaderComponent={() =>
+                ListHeader(horizontalOffset, onHeadingPress)
+              }
               showsVerticalScrollIndicator={false}
               ListEmptyComponent={emptyListComponent}
               renderItem={renderTokenItem}
@@ -269,6 +275,7 @@ export function TokenList() {
                 width: '100%',
                 maxWidth: 1000,
                 alignSelf: 'center',
+                minHeight: '100%',
               }}
               ListFooterComponent={
                 <Button
@@ -278,7 +285,9 @@ export function TokenList() {
                   Refresh
                 </Button>
               }
-              ListHeaderComponent={ListHeader}
+              ListHeaderComponent={() =>
+                ListHeader(horizontalOffset, onHeadingPress)
+              }
               showsVerticalScrollIndicator={false}
               ListEmptyComponent={emptyListComponent}
               renderItem={renderNFTItem}

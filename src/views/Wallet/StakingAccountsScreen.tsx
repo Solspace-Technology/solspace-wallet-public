@@ -26,13 +26,23 @@ export function StakingAccountsScreen({navigation}) {
   } = useWallet();
 
   const [stakeDetails, setStakeDetails] = React.useState(stakeAccounts);
+  const [validatorError, setValidatorError] = React.useState(null);
 
   React.useEffect(() => {
     async function startGetValidatorDetails() {
-      const validatorDetail = await getValidatorDetails(stakeAccounts);
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-      if (!validatorDetail.error) {
-        setStakeDetails(validatorDetail.validators);
+      try {
+        const validatorDetail = await getValidatorDetails(stakeAccounts);
+        if (validatorDetail.error) {
+          throw new Error(validatorDetail.error);
+        }
+        setValidatorError(null);
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        if (!validatorDetail.error) {
+          setStakeDetails(validatorDetail.validators);
+        }
+        console.log('validatorDetail', validatorDetail);
+      } catch (e) {
+        setValidatorError(e);
       }
     }
     startGetValidatorDetails();
@@ -68,11 +78,19 @@ export function StakingAccountsScreen({navigation}) {
                 parsed: {info},
               },
             } = account;
-            console.log('details', details);
             const tokenAmount = lamports / LAMPORTS_PER_SOL;
 
             return (
-              <StakeAccountItem key={index}>
+              <StakeAccountItem
+                key={index}
+                onPress={() =>
+                  navigation.navigate('View Stake Account', {
+                    details,
+                    account: JSON.stringify(account),
+                    lamports,
+                    info: JSON.stringify(info),
+                  })
+                }>
                 {details ? (
                   <View
                     style={{
@@ -94,6 +112,18 @@ export function StakingAccountsScreen({navigation}) {
                       </ImageContainer>
                     )}
                     <Text category="h5">{details?.name}</Text>
+                  </View>
+                ) : validatorError ? (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      backgroundColor: 'inherit',
+                      minHeight: 32,
+                    }}>
+                    <Text>
+                      {shortenPubKey(info?.stake?.delegation?.voter, 6)}
+                    </Text>
                   </View>
                 ) : (
                   <View
@@ -124,6 +154,7 @@ const ImageContainer = styled(Layout)`
   border-radius: 50px;
   overflow: hidden;
   margin-right: 10px;
+  max-height: 50px;
 `;
 
 const Container = styled(ScreenBase)`

@@ -14,12 +14,16 @@ import {Wallet} from './Wallet';
 //Components
 import {StackHeader, StackHeaderWithLogo} from '../../components/Common';
 import {StakingAccountsScreen} from './StakingAccountsScreen';
+import {ViewStakingAccountScreen} from './Staking/ViewStakeAccount';
 
 //! TODO: Figure out how to add swipe down gestures back to token cards
 const Stack = createNativeStackNavigator();
 
 const StakingAccountsHeader = (props: NativeStackHeaderProps) => (
   <StackHeaderWithLogo {...props} title="Staking Accounts" />
+);
+const ViewStakeAccountHeader = (props: NativeStackHeaderProps) => (
+  <StackHeaderWithLogo {...props} title="Your Stake Account" />
 );
 const SendingHeader = (props: NativeStackHeaderProps) => (
   <StackHeaderWithLogo {...props} title="Sending" />
@@ -48,6 +52,14 @@ export const WalletStack = () => (
       options={{
         headerShown: true,
         header: StakingAccountsHeader,
+      }}
+    />
+    <Stack.Screen
+      name="View Stake Account"
+      component={ViewStakingAccountScreen}
+      options={{
+        headerShown: true,
+        header: ViewStakeAccountHeader,
       }}
     />
     <Stack.Screen
