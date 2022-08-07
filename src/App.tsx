@@ -1,18 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 // App State
-import {useWallet} from './providers/wallet-context';
 import {
-  useAppState,
   defaultState as appDefaultState,
+  useAppState,
 } from './providers/appState-context';
+import {useWallet} from './providers/wallet-context';
 
 // Theme stuff
+import * as eva from '@eva-design/eva';
 import {ApplicationProvider, IconRegistry} from '@ui-kitten/components';
 import {EvaIconsPack} from '@ui-kitten/eva-icons';
-import * as eva from '@eva-design/eva';
-import {default as theme} from './styles/theme.json';
-import {default as mapping} from './styles/mapping.json';
 import {useGetCurrentColorScheme} from './hooks/useGetCurrentColorScheme';
+import {default as mapping} from './styles/mapping.json';
+import {default as theme} from './styles/theme.json';
 
 import Toast from 'react-native-toast-message';
 import {toastConfig} from './components/Toast';
@@ -26,10 +26,10 @@ function App() {
   const {dispatch: appStateDispatch} = useAppState();
   const [isLoaded, setIsLoaded] = React.useState(false);
 
-  let isDarkMode = useGetCurrentColorScheme() === 'dark';
+  const isDarkMode = useGetCurrentColorScheme() === 'dark';
 
   async function getAndDispatchStoredItem(key, dispatch) {
-    let value = getStoredData(key);
+    const value = getStoredData(key);
     if (value) {
       console.log('Retrieved localStorage data:', key);
       dispatch({type: 'RESTORE_STATE', payload: JSON.parse(value)});
@@ -37,14 +37,14 @@ function App() {
   }
 
   async function getAndMergeSettingsState() {
-    let storedValueString = getStoredData('@appState');
+    const storedValueString = getStoredData('@appState');
 
     if (storedValueString) {
-      let storedValue = JSON.parse(storedValueString);
-      let newSettings = [];
-      for (let setting of appDefaultState.settings) {
-        let existing = storedValue?.settings?.find(
-          item => item.name === setting.name,
+      const storedValue = JSON.parse(storedValueString);
+      const newSettings = [];
+      for (const setting of appDefaultState.settings) {
+        const existing = storedValue?.settings?.find(
+          (item) => item.name === setting.name,
         );
         if (existing) {
           newSettings.push(existing);

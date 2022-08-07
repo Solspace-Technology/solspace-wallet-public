@@ -1,7 +1,13 @@
 // Nav Imports
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {createDrawerNavigator} from '@react-navigation/drawer';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {
+  createDrawerNavigator,
+  DrawerContentComponentProps,
+} from '@react-navigation/drawer';
+import {
+  createNativeStackNavigator,
+  NativeStackHeaderProps,
+} from '@react-navigation/native-stack';
 
 // Screens
 import {CameraScreen} from './CameraScreen';
@@ -28,10 +34,14 @@ const BottomTabs = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();
 const DrawerStack = createDrawerNavigator();
 
+const BottomTabBarComponent = (props: {state: any; navigation: any}) => (
+  <BottomTabBar {...props} />
+);
+
 const DrawerViews = () => (
   <BottomTabs.Navigator
     screenOptions={{headerShown: false}}
-    tabBar={(props) => <BottomTabBar {...props} />}>
+    tabBar={BottomTabBarComponent}>
     <BottomTabs.Screen
       name="Wallet"
       component={WalletStack}
@@ -46,6 +56,30 @@ const DrawerViews = () => (
   </BottomTabs.Navigator>
 );
 
+const ManageWalletHeader = (props: NativeStackHeaderProps) => (
+  <StackHeader
+    title="Manage Wallets"
+    leftIconName="arrowhead-down-outline"
+    {...props}
+  />
+);
+
+const ViewTransactionHeader = (props: NativeStackHeaderProps) => (
+  <StackHeader
+    title="View Transaction"
+    leftIconName="arrowhead-down-outline"
+    {...props}
+  />
+);
+
+const CameraHeader = (props: NativeStackHeaderProps) => (
+  <StackHeader
+    title="Scan Code"
+    leftIconName="arrowhead-down-outline"
+    {...props}
+  />
+);
+
 const MainView = () => (
   <RootStack.Navigator
     screenOptions={{
@@ -57,13 +91,7 @@ const MainView = () => (
       component={ManageWalletsScreen}
       options={{
         headerShown: true,
-        header: (props) => (
-          <StackHeader
-            title="Manage Wallets"
-            leftIconName="arrowhead-down-outline"
-            {...props}
-          />
-        ),
+        header: ManageWalletHeader,
         presentation: 'modal',
       }}
     />
@@ -72,13 +100,7 @@ const MainView = () => (
       component={ViewTransactionScreen}
       options={{
         headerShown: true,
-        header: (props) => (
-          <StackHeader
-            title="View Transaction"
-            leftIconName="arrowhead-down-outline"
-            {...props}
-          />
-        ),
+        header: ViewTransactionHeader,
         presentation: 'modal',
       }}
     />
@@ -87,20 +109,18 @@ const MainView = () => (
       component={CameraScreen}
       options={{
         headerShown: true,
-        header: (props) => (
-          <StackHeader
-            title="Scan Code"
-            leftIconName="arrowhead-down-outline"
-            {...props}
-          />
-        ),
+        header: CameraHeader,
         presentation: 'modal',
       }}
     />
   </RootStack.Navigator>
 );
 
-export function RootView({isLoaded}) {
+const DrawerContainerComponent = (props: DrawerContentComponentProps) => (
+  <DrawerContainer {...props} />
+);
+
+export function RootView({isLoaded}: {isLoaded: boolean}) {
   const [isReady, setIsReady] = React.useState(false);
 
   function callRootReady() {
@@ -125,7 +145,7 @@ export function RootView({isLoaded}) {
           drawerType: 'slide',
           swipeEdgeWidth: 15,
         }}
-        drawerContent={(props) => <DrawerContainer {...props} />}>
+        drawerContent={DrawerContainerComponent}>
         <DrawerStack.Screen name="Root" component={MainView} />
       </DrawerStack.Navigator>
     </NavigationContainer>
