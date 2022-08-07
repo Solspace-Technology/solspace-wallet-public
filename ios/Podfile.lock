@@ -319,7 +319,7 @@ PODS:
     - React-Core
   - react-native-quick-base64 (2.0.5):
     - React-Core
-  - react-native-quick-crypto (0.4.4):
+  - react-native-quick-crypto (0.4.5):
     - OpenSSL-Universal
     - React
     - React-callinvoker
@@ -442,8 +442,6 @@ PODS:
     - React
   - RNSVG (12.4.3):
     - React-Core
-  - RNVectorIcons (9.2.0):
-    - React-Core
   - vision-camera-qrcode-scanner (0.1.4):
     - GoogleMLKit/BarcodeScanning
     - React-Core
@@ -507,7 +505,6 @@ DEPENDENCIES:
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSecureRandom (from `../node_modules/react-native-securerandom`)
   - RNSVG (from `../node_modules/react-native-svg`)
-  - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - vision-camera-qrcode-scanner (from `../node_modules/vision-camera-qrcode-scanner`)
   - VisionCamera (from `../node_modules/react-native-vision-camera`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -638,8 +635,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-securerandom"
   RNSVG:
     :path: "../node_modules/react-native-svg"
-  RNVectorIcons:
-    :path: "../node_modules/react-native-vector-icons"
   vision-camera-qrcode-scanner:
     :path: "../node_modules/vision-camera-qrcode-scanner"
   VisionCamera:
@@ -695,7 +690,7 @@ SPEC CHECKSUMS:
   react-native-get-random-values: a6ea6a8a65dc93e96e24a11105b1a9c8cfe1d72a
   react-native-mmkv: 1265a348a4711097ba29c8bcefd5971f48220f2b
   react-native-quick-base64: e657e9197e61b60a9dec49807843052b830da254
-  react-native-quick-crypto: 7fb9a6aa45ffa1b568cb30d187f90a34b2d3304b
+  react-native-quick-crypto: b4e02e045076ea6bbcb9f3d2d53b427328bbc1cb
   react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
   react-native-webview: e771bc375f789ebfa02a26939a57dbc6fa897336
   React-perflogger: 39d2ba8cbcac54d1bb1d9a980dab348e96aef467
@@ -719,7 +714,6 @@ SPEC CHECKSUMS:
   RNScreens: 4a1af06327774490d97342c00aee0c2bafb497b7
   RNSecureRandom: 0dcee021fdb3d50cd5cee5db0ebf583c42f5af0e
   RNSVG: f3b60aeeaa81960e2e0536c3a9eef50b667ef3a9
-  RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   vision-camera-qrcode-scanner: 39fc13c42c2f493f2952541f4773424437727411
   VisionCamera: 81b9c14c2d5abeb4ddcc273446d93b5d1654b892
   Yoga: 44c64131616253fa83366295acdbce3d14926041
