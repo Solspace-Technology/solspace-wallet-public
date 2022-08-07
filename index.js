@@ -14,6 +14,9 @@ import {AppRegistry} from 'react-native';
 import Config from 'react-native-config';
 import {name as appName} from './app.json';
 import App from './src/App';
+// eslint-disable-next-line prettier/prettier, @typescript-eslint/no-unused-vars
+import TextEncoder from 'text-encoding-polyfill';
+//* ^^Removing this seriously breaks things
 
 // Error Tracking
 import LogRocket from '@logrocket/react-native';
