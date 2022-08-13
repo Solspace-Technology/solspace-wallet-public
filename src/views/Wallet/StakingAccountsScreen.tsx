@@ -13,7 +13,6 @@ import {ScreenBase} from '../../components/Common';
 import {shortenPubKey} from '../../modules/utils';
 
 import {useWallet} from '../../providers/wallet-context';
-import {getValidatorDetails} from '../../services/staking';
 import {ThemeVariables} from '../../styles/themeVariables';
 
 const {colors} = ThemeVariables();
@@ -31,16 +30,16 @@ export function StakingAccountsScreen({navigation}) {
   React.useEffect(() => {
     async function startGetValidatorDetails() {
       try {
-        const validatorDetail = await getValidatorDetails(stakeAccounts);
-        if (validatorDetail.error) {
-          throw new Error(validatorDetail.error);
-        }
-        setValidatorError(null);
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-        if (!validatorDetail.error) {
-          setStakeDetails(validatorDetail.validators);
-        }
-        console.log('validatorDetail', validatorDetail);
+        // const validatorDetail = await getValidatorDetails(stakeAccounts);
+        // if (validatorDetail.error) {
+        //   throw new Error(validatorDetail.error);
+        // }
+        // setValidatorError(null);
+        // LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        // if (!validatorDetail.error) {
+        //   setStakeDetails(validatorDetail.validators);
+        // }
+        // console.log('validatorDetail', validatorDetail);
       } catch (e) {
         setValidatorError(e);
       }
