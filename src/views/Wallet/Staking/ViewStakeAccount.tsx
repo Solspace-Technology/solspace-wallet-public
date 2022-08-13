@@ -7,10 +7,15 @@ import {ScreenBase} from '../../../components/Common';
 import {shortenPubKey} from '../../../modules/utils';
 
 export function ViewStakingAccountScreen(props) {
-  console.log('props', props);
   const {
     route: {
-      params: {account: accountString, details, info: infoString, lamports},
+      params: {
+        account: accountString,
+        details,
+        info: infoString,
+        lamports,
+        earnings,
+      },
     },
   } = props;
   const info = JSON.parse(infoString);
@@ -79,16 +84,16 @@ export function ViewStakingAccountScreen(props) {
               </Text>
             </View>
           </Row>
-          {/* <Row>
+          <Row>
             <View>
               <Text category="h5">Rewards</Text>
             </View>
             <View>
-              <Text category="h5">
-                {roundToFiveDecimals(rewards / LAMPORTS_PER_SOL)}
+              <Text category="h5" style={{color: 'limegreen'}}>
+                {roundToFiveDecimals(earnings.amount / LAMPORTS_PER_SOL)}
               </Text>
             </View>
-          </Row> */}
+          </Row>
         </View>
         <Layout>
           <Button status="danger">Unstake</Button>

@@ -13,6 +13,7 @@ import {ScreenBase} from '../../components/Common';
 import {shortenPubKey} from '../../modules/utils';
 
 import {useWallet} from '../../providers/wallet-context';
+import {getValidatorDetails} from '../../services/staking';
 import {ThemeVariables} from '../../styles/themeVariables';
 
 const {colors} = ThemeVariables();
@@ -30,16 +31,15 @@ export function StakingAccountsScreen({navigation}) {
   React.useEffect(() => {
     async function startGetValidatorDetails() {
       try {
-        // const validatorDetail = await getValidatorDetails(stakeAccounts);
-        // if (validatorDetail.error) {
-        //   throw new Error(validatorDetail.error);
-        // }
-        // setValidatorError(null);
-        // LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-        // if (!validatorDetail.error) {
-        //   setStakeDetails(validatorDetail.validators);
-        // }
-        // console.log('validatorDetail', validatorDetail);
+        const validatorDetail = await getValidatorDetails(stakeAccounts);
+        if (validatorDetail.error) {
+          throw new Error(validatorDetail.error);
+        }
+        setValidatorError(null);
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        if (!validatorDetail.error) {
+          setStakeDetails(validatorDetail.validators);
+        }
       } catch (e) {
         setValidatorError(e);
       }
@@ -51,8 +51,6 @@ export function StakingAccountsScreen({navigation}) {
     navigation.goBack();
     return null;
   }
-
-  console.log(stakeDetails);
 
   return (
     <Container>
@@ -70,7 +68,7 @@ export function StakingAccountsScreen({navigation}) {
           accessoryLeft={<Icon name="search" style={{height: 20, width: 20}} />}
         /> */}
         {stakeDetails &&
-          stakeDetails.map(({account, details}, index) => {
+          stakeDetails.map(({account, details, earnings}, index) => {
             const {
               lamports,
               data: {
@@ -85,6 +83,7 @@ export function StakingAccountsScreen({navigation}) {
                 onPress={() =>
                   navigation.navigate('View Stake Account', {
                     details,
+                    earnings,
                     account: JSON.stringify(account),
                     lamports,
                     info: JSON.stringify(info),

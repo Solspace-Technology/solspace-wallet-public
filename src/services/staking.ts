@@ -7,7 +7,8 @@ import {
 } from '@solana/web3.js';
 import {WalletAdapterNetwork} from '@solana/wallet-adapter-base';
 
-const API_KEY = process.env.REACT_APP_VALIDATOR_API_KEY;
+const API_KEY =
+  process.env.VALIDATORS_APP_API_KEY || 'QoxUniG2ffGVZHQgKAiBopgH';
 
 export async function getStakingAccounts(
   pubkeyString: string,
